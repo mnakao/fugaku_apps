@@ -1,0 +1,41 @@
+<%
+  require './fugaku_apps/utils.rb'
+
+  form_common, script_common = fugaku_common("small_and_large")
+
+  # spack versions ntchem -s
+  versions = ["24.04", "13.0.0", "12.2.0"]
+  
+  calcs = [["HF/DFT (Hartree–Fock/Density Functional Theory)", "HF/DFT"]]
+  working_dir_types = [["$HOME/$PJM_JOBID",    "${HOME}/${PJM_JOBID}", "disable-working_dir_shared", "disable-working_dir"],
+                       ["$PJM_SHAREDTMP",      "${PJM_SHAREDTMP}",     "disable-working_dir_jobid",  "disable-working_dir", "enable-output_dir"],
+		       ["Specify a directory", "",                     "disable-working_dir_jobid",  "disable-working_dir_shared"]]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("ntchem", "NTChem version", versions) %>
+<%= radio("working_dir_type", "Working directory type", working_dir_types, nil, "Copy the input file to the directory where NTChem will run.") %>
+<%= working_dir(true) %>
+<%= input_file(true) %>
+  output_dir:
+    widget: path
+    label: Output directory
+    help: $PJM_SHAREDTMP/*.MO are copied to the output directory after running NTChem.
+    required: true
+
+script: |
+<%= script_common %>
+  export OMP_STACKSIZE=128M
+
+  WORKING_DIR=#{working_dir_type}
+  WORKING_DIR=#{working_dir}
+  mkdir -p ${WORKING_DIR}
+  cp #{input_file} ${WORKING_DIR}/INPUT
+  
+  cd ${WORKING_DIR}
+  for i in basinp mdint1 scf; do
+    mpiexec -std-proc ${WORKING_DIR}/${i}/%%/1000r/${i} ${i}_mpiomp.exe
+  done
+
+  cp ${WORKING_DIR}/*.MO #{output_dir}

@@ -1,0 +1,6 @@
+---
+name: braket
+category: Quantum Simulation
+icon: icon.svg
+description: |
+  The <a target="_blank" class="link-warning" href="https://github.com/naoki-yoshioka/braket">braket</a> is a tool for simulations of quantum gates.

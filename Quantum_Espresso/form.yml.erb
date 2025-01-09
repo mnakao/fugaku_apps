@@ -1,0 +1,28 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small")
+  
+  # spack versions quantum-espresso -s
+  versions = ["7.3", "7.2"]
+
+  # spack find --paths quantum-espresso@7.3
+  # ls -1 /vol0004/apps/opt/qe-7.3/bin/ | awk '{printf (NR==1?"[\"%s\"":", \"%s\""), $0} END {print "]"}'
+  binaries = ["alpha2f.x", "average.x", "band_interpolation.x", "bands_unfold.x", "bands.x", "bse_main.x", "cell2ibrav.x", "cppp.x", "cp.x", "d3hess.x", "disca.x", "dist.x", "dos.x", "dvscf_q2r.x", "dynmat.x", "epa.x", "epsilon_Gaus.x", "epsilon.x", "epw.x", "ev.x", "fermi_proj.x", "fermi_velocity.x", "fqha.x", "fs.x", "gww_fit.x", "gww.x", "head.x", "hp.x", "ibrav2cell.x", "initial_state.x", "kcwpp_interp.x", "kcwpp_sh.x", "kcw.x", "kpoints.x", "lambda.x", "ld1.x", "manycp.x", "manypw.x", "matdyn.x", "molecularnexafs.x", "molecularpdos.x", "neb.x", "open_grid.x", "oscdft_et.x", "oscdft_pp.x", "path_interpolation.x", "phcg.x", "ph.x", "plan_avg.x", "plotband.x", "plotproj.x", "plotrho.x", "pmw.x", "postahc.x", "ppacf.x", "pp_disca.x", "pprism.x", "pp_spctrlfn.x", "pp.x", "projwfc.x", "pw2bgw.x", "pw2critic.x", "pw2gw.x", "pw2wannier90.x", "pw4gww.x", "pwcond.x", "pwgui", "pwi2xsf.x", "pw.x", "q2qstar.x", "q2r.x", "rism1d.x", "scan_ibrav.x", "simple_bse.x", "simple_ip.x", "simple.x", "spectra_correction.x", "sumpdos.x", "turbo_davidson.x", "turbo_eels.x", "turbo_lanczos.x", "turbo_magnon.x", "turbo_spectrum.x", "wannier90.x", "wannier_ham.x", "wannier_plot.x", "wfck2r.x", "wfdd.x", "xspectra.x", "ZG.x"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("quantum_espresso", "Quantum Espresso version", versions) %>
+<%= exec_file(binaries) %>
+<%= input_file(true) %>
+<%= text("options", "Options (e.g. -nk 2)") %>
+
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load quantum-espresso@#{quantum_espresso}
+  
+  cd #{dirname(input_file)}
+  mpiexec #{exec_file} -in #{basename(input_file)} #{:options}

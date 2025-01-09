@@ -1,0 +1,6 @@
+---
+name: Quantum Espresso
+category: Condensed Matter Physics
+icon: icon.png
+description: |
+  <a target="_blank" class="link-warning" href="https://www.quantum-espresso.org">Quantum Espresso</a> is an integrated suite for electronic-structure calculations and materials modeling.

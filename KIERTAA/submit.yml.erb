@@ -1,0 +1,13 @@
+<%
+  fugaku_group = @sample.split("/")[2]
+  datadir_base = "/2ndfs/" + fugaku_group + "/" + ENV['USER']
+%>
+---
+script: |
+  #!/usr/bin/env bash
+  
+  #cd <%= datadir_base %>
+  mv <%= @TMP_SCRIPT_PATH %> ct.conf
+  cat ct.conf
+  pwd
+  #PATH=/vol0004/apps/opt/KIERTAA/bin:$PATH genjs_ct ct.conf > <%= @SCRIPT_PATH %>

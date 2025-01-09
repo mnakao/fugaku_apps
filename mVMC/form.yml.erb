@@ -1,0 +1,35 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small_and_large")
+
+  # spack versions mvmc -s
+  versions = ["1.2.0"] #Since there is only one version, we do not create options in the form.
+%>
+---
+form:
+<%= form_common %>
+  executable:
+    widget: radio
+    label: Executable file
+    direction: horizontal
+    value: "vmc.out"
+    options:
+      - ["vmc.out", "vmc.out", disable-uhf_input_file ]
+      - ["UHF",     "UHF",     disable-vmc_input_file, disable-se_mode, disable-nodes_procs_threads, set-value-rsc_group: small]
+      
+<%= radio("se_mode", "Mode",  [["--standard", "-s"], ["--expert", "-e"]]) %>
+<%= path("vmc_input_file", "Input file for vmc.out", true) %>
+<%= path("uhf_input_file", "Input file for UHF"    , true) %>
+   
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load mvmc
+
+  cd #{dirname(vmc_input_file)}
+  cd #{dirname(uhf_input_file)}
+  mpiexec #{executable} #{se_mode} #{basename(vmc_input_file)}
+  #{executable} #{basename(uhf_input_file)} &> output.${PJM_JOBID}
+

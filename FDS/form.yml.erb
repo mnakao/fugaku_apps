@@ -1,0 +1,25 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small_and_large")
+  
+  # spack versions fds -s
+  versions = ["6.8.0", "6.7.9", "6.7.8", "6.7.7"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("fds", "FDS version", versions) %>
+<%= input_file(true) %>
+
+script: |
+<%= script_common %>
+
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load fds@#{fds}
+  
+  cd #{dirname(input_file)}
+  mpiexec fds_mpi_fugaku #{basename(input_file)}
+
+check: |
+  raise "Time" if @time_1 == 24 && @time_2 != 0

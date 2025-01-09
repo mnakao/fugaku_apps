@@ -1,0 +1,132 @@
+---
+form:
+  rsc_group:
+    widget: select
+    label: Resource group
+    options:
+      - [ small, small ]
+      - [ large, large, set-label-nodes: "Number of nodes (385 - 12,288)", set-min-nodes: 385, set-max-nodes: 12288, set-label-time-1: Maximum run hours (0 - 24), set-max-time-1: 24]
+
+  nodes:
+    widget:   number
+    label:    Number of nodes (1 - 384)
+    value:    1
+    min:      1
+    max:      384
+    required: true
+
+  time:
+    widget:   number
+    label:    [ Maximum run hours (0 - 72), Maximum run minutes (0 - 59) ]
+    size:     2
+    value:    [  1,  0 ]
+    min:      [  0,  0 ]
+    max:      [ 72, 59 ]
+    step:     [  1,  1 ]
+    required: [true, true]
+
+  procs_threads:
+    widget: number
+    size: 2
+    value: [1, 48]
+    label: [Total number of procs, Number of threads (1-48)]
+    required: [true, true]
+    help: Number of nodes x 48 >= Total number of procs x Number of threads
+    
+  script_name:
+    widget: text
+    label: Script name (Up to 63 bytes)
+
+  show_advanced_option:
+    widget: checkbox
+    options:
+    - [ 'Show advanced option', '', show-mode, show-stat ]
+    
+  mode:
+    widget: radio
+    label: Execution mode
+    direction: horizontal
+    value: Normal
+    options:
+      - [Normal,    ""]
+      - [Boost,     "#PJM -L freq=2200"]
+      - [Eco,       "#PJM -L eco_state=2"]
+      - [Boost-Eco, "#PJM -L freq=2200,eco_state=2"]
+    help: Please refer to the manual for details in <a href="https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/PowerControlFunction/index.html">English</a> or <a href="https://www.fugaku.r-ccs.riken.jp/doc_root/ja/user_guides/use_latest/PowerControlFunction/index.html">Japanese</a>.
+
+  stat:
+    widget: radio
+    label: Output statistics information
+    value: (None)
+    options:
+      - ["(None)",  "", disable-stat_file_name]
+      - ["Outputs the statistics of the submitted job", "-s"]
+      - ["Outputs information about the submitted job on a per-node basis", "-S"]
+
+  stat_file_name:
+    widget: text
+    label: Statistics file name
+
+  # spack versions scale -s
+  scale:
+    widget: select
+    label: SCALE version
+    options:
+      - [ 5.5.2, 5.5.2 ]
+      - [ 5.5.1, 5.5.1 ]
+      - [ 5.4.5, 5.4.5 ]
+      - [ 5.3.6, 5.3.6 ]
+      - [ 5.2.6, 5.2.6 ]
+
+  working_dir:
+    widget: path
+    label: Working Directory
+    show_files: false
+    required: true
+
+  rm_pp_file:
+    widget: path
+    label: Input file for scale-rm_pp (If blank, scale-rm_pp will not run)
+
+  rm_init_file:
+    widget: path
+    label: Input file for scale-rm_init (If blank, scale-rm_init will not run)
+
+  rm_file:
+    widget: path
+    label: Input file for scale-rm (If blank, scale-rm will not run)
+
+  sno_file:
+    widget: path
+    label: Input file for sno (If blank, sno will not run)
+
+  net2g_file:
+    widget: path
+    label: Input file for net2g (If blank, net2g will not run)
+    
+script: |
+  #!/usr/bin/env bash
+  #PJM -L "rscgrp=#{rsc_group}"
+  #PJM -L "node=#{nodes}"
+  #PJM -L "elapse=#{time-1}:#{time-2}:00"
+  #PJM --name "#{script_name}"
+  #PJM --mpi "proc=#{procs_threads-1}"
+  #{mode}
+  #PJM #{stat}
+  #PJM --pathname #{stat_file_name}
+
+  export FORT90L=-Wl,-T
+  export PLE_MPI_STD_EMPTYFILE=off
+  export OMP_WAIT_POLICY=active
+  export FLIB_BARRIER=HARD
+  export OMP_NUM_THREADS=#{procs_threads-2}
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load scale@#{scale}
+
+  cd "#{working_dir}"
+  mpiexec scale-rm_pp "#{rm_pp_file}"
+  mpiexec scale-rm_init "#{rm_init_file}"
+  mpiexec scale-rm "#{rm_file}"
+  mpiexec sno "#{sno_file}"
+  mpiexec net2g "#{net2g_file}"

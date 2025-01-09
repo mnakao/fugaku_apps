@@ -1,0 +1,252 @@
+def rsc_group(enable_threads)
+  yaml = <<-YAML
+  rsc_group:
+    widget: radio
+    direction: horizontal
+    label: Resource group
+    value: small
+    options:
+      - [ small, small ]
+YAML
+  if !enable_threads
+    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (1 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
+  else
+    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (1 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
+  end
+end
+
+def threads()
+  <<-YAML
+  threads:
+    widget: number
+    value:  1
+    min:    1
+    max:   48
+    step:   1
+    label: "Threads (1 - 48)"
+    required: true
+YAML
+end
+
+def nodes_procs()
+  <<-YAML
+  nodes_procs:
+    widget: number
+    size: 2
+    value: [   1,     1 ]
+    min:   [   1,     1 ]
+    max:   [ 384, 18432 ]
+    step:  [   1,     1 ]
+    label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)" ]
+    required: [ true, true ]
+    help: Nodes x 48 >= Procs
+YAML
+end
+
+def nodes_procs_threads()
+  <<-YAML
+  nodes_procs_threads:
+    widget: number
+    size: 3
+    value: [   1,     1,  1 ]
+    min:   [   1,     1,  1 ]
+    max:   [ 384, 18432, 48 ]
+    step:  [   1,     1,  1 ]
+    label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)", "Threads (1 - 48)" ]
+    required: [ true, true, true ]
+    help: Nodes x 48 >= Procs x Threads
+YAML
+end
+
+def fugaku_common(rsc_group, enable_threads = true)
+  form = rsc_group == "small_and_large" ? rsc_group(enable_threads) : ""
+
+  if rsc_group == "single_procs" && enable_threads
+    form << threads()
+  elsif rsc_group != "single_procs" && !enable_threads
+    form << nodes_procs()
+  elsif rsc_group != "single_procs" && enable_threads
+    form << nodes_procs_threads()
+  end
+
+  form << <<-YAML
+  time:
+    widget:   number
+    label:    [ Maximum run hours (0 - 72), Maximum run minutes (0 - 59) ]
+    size:     2
+    value:    [  1,  0 ]
+    min:      [  0,  0 ]
+    max:      [ 72, 59 ]
+    step:     [  1,  1 ]
+    required: [ true, true]
+
+  show_advanced_option:
+    widget: checkbox
+    options:
+    - [ 'Show advanced option', '', show-mode, show-stat, show-mail, show-mail_option ]
+
+  mode:
+    widget: radio
+    label: Execution mode
+    direction: horizontal
+    value: Normal
+    options:
+      - [Normal,    ""]
+      - [Boost,     "#PJM -L freq=2200"]
+      - [Eco,       "#PJM -L eco_state=2"]
+      - [Boost-Eco, "#PJM -L freq=2200,eco_state=2"]
+    help: Please refer to the manual for details in <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/PowerControlFunction/index.html">English</a> or <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/ja/user_guides/use_latest/PowerControlFunction/index.html">Japanese</a>.
+
+  stat:
+    widget: radio
+    label: Output statistics information
+    direction: horizontal
+    value: (None)
+    options:
+      - ["(None)",  "", disable-stat_file_name]
+      - ["Statistics without node information", "-s"]
+      - ["Statistics with node information", "-S"]
+
+  stat_file_name:
+    widget: text
+    label: Statistics file name
+
+  mail:
+    widget: email
+    label: Mail Address
+
+  mail_option:
+    widget: checkbox
+    label: Mail option
+    direction: horizontal
+    separator: ","
+    options:
+      - [Beginning of job execution, b]
+      - [End of job execution, e]
+      - [Restart of job, r]
+      - [Statistics without node information, s, disable-mail_option-Statistical information with node information]
+      - [Statistics with node information, S, disable-mail_option-Statistical information without node information]
+YAML
+
+  script = "  #!/usr/bin/env bash\n"
+  if rsc_group == "small_and_large"
+    script << "  #PJM -L \"rscgrp=\#{rsc_group}\"\n"
+  elsif rsc_group == "small"
+    script << "  #PJM -L \"rscgrp=small\"\n"
+  end
+
+  if rsc_group == "single_procs" && enable_threads
+  elsif rsc_group != "single_procs" && !enable_threads
+    script << "  #PJM -L \"node=\#{nodes_procs_1}\"\n"
+    script << "  #PJM --mpi \"proc=\#{nodes_procs_2}\"\n"
+  elsif rsc_group != "single_procs" && enable_threads
+    script << "  #PJM -L \"node=\#{nodes_procs_threads_1}\"\n"
+    script << "  #PJM --mpi \"proc=\#{nodes_procs_threads_2}\"\n"
+  end
+  
+  script << <<-YAML
+  #PJM -L "elapse=\#{time_1}:\#{time_2}:00"
+  #PJM --name "\#{_JOB_NAME}"
+  \#{mode}
+  #PJM \#{stat}
+  #PJM --pathname \#{stat_file_name}
+  #PJM --mail-list \#{mail}
+  #PJM -m \#{mail_option}
+YAML
+
+  if rsc_group == "single_procs" && enable_threads
+    script << "  export OMP_NUM_THREADS=\#{threads}\n"
+  elsif rsc_group != "single_procs" && enable_threads
+    script << "  export OMP_NUM_THREADS=\#{nodes_procs_threads_3}\n"
+  end
+  
+  return form.chomp, script.chomp
+end
+
+def text(key, label, required = false)
+  form = <<-YAML
+  #{key}:
+    widget: text
+    label: #{label}
+YAML
+  form << "    required: #{required}" if required
+
+  return form
+end
+
+def output_options(options, value)
+  form = ""
+  if options[0].is_a?(Array)
+    options.each do |v|
+      form << "      - ["
+      form << v.each_with_index.map { |i, index| index >= 2 ? i : "\"#{i}\"" }.join(", ")
+      form << "]\n"
+    end
+    form << (value == nil ? "    value: \"#{options[0][0]}\"" : "    value: \"#{value}\"")
+  else
+    options.each do |v|
+      form << "      - [\"#{v}\", \"#{v}\"]\n"
+    end
+    form << (value == nil ? "    value: \"#{options[0]}\"" : "    value: \"#{value}\"")
+  end
+end
+
+def select(key, label, options, value = nil, help = nil)
+  form = <<-YAML
+  #{key}:
+    widget: select
+    required: true
+    label: #{label}
+    options:
+#{output_options(options, value)}
+YAML
+  form << "    help: #{help}\n" if help != nil
+
+  return form
+end
+
+def radio(key, label, options, value = nil, help = nil)
+  form = <<-YAML
+  #{key}:
+    widget: radio
+    direction: horizontal
+    required: true
+    label: #{label}
+    options:
+#{output_options(options, value)}
+YAML
+  form << "    help: #{help}" if help != nil
+
+  return form
+end
+
+def path(key, label, required)
+  <<-YAML
+  #{key}:
+    widget: path
+    label: #{label}
+    required: #{required}
+YAML
+end
+
+def working_dir(required)
+  <<-YAML
+  working_dir:
+    widget: path
+    label: Working directory
+    show_files: false
+    required: #{required}
+YAML
+end
+
+def exec_file(binaries, value = nil, widget = "select")
+  if widget == "select"
+    select("exec_file", "Executable file", binaries, value)
+  else
+    radio("exec_file", "Executable file", binaries, value)
+  end
+end
+
+def input_file(required)
+  path("input_file", "Input file", required)
+end

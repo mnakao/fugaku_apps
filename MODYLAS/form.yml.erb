@@ -1,0 +1,27 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small_and_large")
+  
+  # spack versions modylas-new -s
+  versions = [["1.1.0 (ff=charmm)", "1.1.0/qpbwc72"], ["1.1.0 (ff=gaff)", "1.1.0/inzalz2"], ["1.1.0 (ff=oplsaa)", "1.1.0/zhajus2"]]
+
+  # spack find --paths modylas-new@1.1.0
+  binaries = ["modylas", "modylas-mdtrj2xtc", "modylas-mdtrj2xyz", "modylas-mdxtc2ana", "modylas-text2bin"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("modylas", "MODYLAS version", versions) %>
+<%= working_dir(true) %>
+<%= exec_file(binaries) %>
+<%= text("session_name", "Session name", true) %>
+
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load modylas-new@#{modylas}
+
+  cd #{working_dir}
+  mpiexec #{:exec_file} #{session_name}

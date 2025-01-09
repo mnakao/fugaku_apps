@@ -1,0 +1,7 @@
+---
+name: SCALE
+category: Climate
+icon: icon.png
+description: |
+  <a target="_blank" class="link-warning" href="https://scale.riken.jp">SCALE (Scalable Computing for Advanced Library and Environment)</a> is a basic library for weather and climate model.
+

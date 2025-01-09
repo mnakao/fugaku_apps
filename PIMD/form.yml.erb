@@ -1,0 +1,25 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small")
+  
+  # spack versions pimd -s
+  # spack find --paths pimd@2.6.1-aenet
+  versions = ["2.6.1-qe6.3", "2.6.1-cp2k", "2.6.1-aenet"]
+  binaries = ["calc.x", "convert_charmm.x", "convert_tinker.x", "gau.x", "pimd.mpi.x", "pimd.x", "polymers.x", "prep_best.x", "prep_liquid.x", "run_molpro.x"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("pimd", "PIMD version", versions) %>
+<%= working_dir(true) %>
+<%= exec_file(binaries, "pimd.mpi.x") %>
+
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load pimd@#{pimd}
+
+  cd #{working_dir}
+  mpiexec lmp -in #{exec_file}

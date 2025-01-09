@@ -1,0 +1,34 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small_and_large")
+  
+  # spack versions abinitmp -s
+  versions = [["2-8", "2-8", "disable-exec_file24", "disable-exec_file122"], ["2-4", "2-4", "disable-exec_file28", "disable-exec_file122"], ["1-22", "1-22", "disable-exec_file28", "disable-exec_file24"]]
+
+  # spack find --paths abinitmp@2-8
+  # spack find --paths abinitmp@2-4
+  # spack find --paths abinitmp@1-22
+  binaries28  = ["abinitmp", "abinitmp-fint", "abinitmp_smp", "abinitmp_smp-fint", "mkinp_ver2rev8-hd-2023august.py"]
+  binaries24  = ["abinitmp", "abinitmp-fint", "abinitmp_smp", "abinitmp_smp-fint", "mkinp_openver2rev4.py"]
+  binaries122 = ["abinitmp", "abinitmp-fint", "abinitmp_smp", "abinitmp_smp-fint", "mkinp_openver1rev20.py"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("abinitmp", "ABINIT-MP version", versions) %>
+<%= select("exec_file28",  "Executable file of ABINIT-MP 2-8",  binaries28,  "abinitmp") %>
+<%= select("exec_file24",  "Executable file of ABINIT-MP 2-4",  binaries24,  "abinitmp") %>
+<%= select("exec_file122", "Executable file of ABINIT-MP 1-22", binaries122, "abinitmp") %>
+<%= input_file(true) %>
+
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load abinitmp@#{abinitmp}
+  
+  cd #{dirname(input_file)}
+  mpiexec #{exec_file28} < #{basename(input_file)}
+  mpiexec #{exec_file24} < #{basename(input_file)}
+  mpiexec #{exec_file122} < #{basename(input_file)}

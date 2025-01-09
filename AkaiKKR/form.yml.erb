@@ -1,0 +1,21 @@
+<%
+  require './fugaku_apps/utils.rb'
+
+  form_common, script_common = fugaku_common("single_procs")
+  
+  # spack versions akaikkr -s
+  versions = ["2021v001", "2002v010"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("akaikkr", "AkaiKKR version", versions) %>
+<%= input_file(true) %>
+
+script: |
+<%= script_common %>
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load akaikkr@#{akaikkr}
+  
+  cd #{dirname(input_file)}
+  specx < #{input_file} > output.txt

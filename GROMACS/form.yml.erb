@@ -1,0 +1,23 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small")
+  
+  # spack versions gromacs -s
+  versions = ["2024.2", "2024.1", "2024"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("gromacs", "GROMACS version", versions) %>
+<%= working_dir(true) %>
+<%= text("options", "Options (e.g. –nt 2)") %>
+
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load gromacs@#{gromacs}
+  
+  cd #{working_dir}
+  mpiexec gmx_mpi #{:options}

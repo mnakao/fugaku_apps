@@ -1,0 +1,36 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small_and_large")
+  
+  # spack versions scale -s
+  versions = ["5.5.2", "5.5.1", "5.4.5", "5.3.6", "5.2.6"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("scale", "SCALE version", versions) %>
+<%= working_dir(true) %>
+<%= path("rm_pp_file",   "Input file for scale-rm_pp (If blank, scale-rm_pp will not run)", false) %>
+<%= path("rm_init_file", "Input file for scale-rm_init (If blank, scale-rm_init will not run)", false) %>
+<%= path("rm_file",      "Input file for scale-rm (If blank, scale-rm will not run)", false) %>
+<%= path("sno_file",     "Input file for sno (If blank, sno will not run)", false) %>
+<%= path("net2g_file",   "Input file for net2g (If blank, net2g will not run)", false) %>
+    
+script: |
+<%= script_common %>
+  
+  export FORT90L=-Wl,-T
+  export PLE_MPI_STD_EMPTYFILE=off
+  export OMP_WAIT_POLICY=active
+  export FLIB_BARRIER=HARD
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load scale@#{scale}
+
+  cd #{working_dir}
+  mpiexec scale-rm_pp #{rm_pp_file}
+  mpiexec scale-rm_init #{rm_init_file}
+  mpiexec scale-rm #{rm_file}
+  mpiexec sno #{sno_file}
+  mpiexec net2g #{net2g_file}

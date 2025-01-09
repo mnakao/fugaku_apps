@@ -1,0 +1,7 @@
+---
+name: LAMMPS
+category: Molecular Dynamics
+icon: icon.png
+description: |
+  <a target="_blank" class="link-warning" href="https://www.lammps.org/">LAMMPS</a> is a classical molecular dynamics code for materials modeling.
+

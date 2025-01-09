@@ -1,0 +1,25 @@
+<%
+  require './fugaku_apps/utils.rb'
+
+  form_common, script_common = fugaku_common("single_procs")
+
+  # module use /vol0004/apps/isv/Gaussian/modulefiles
+  # module avail Gaussian
+  versions = ["g16c02", "g16c01"]
+%>
+---
+form:
+<%= form_common %>
+<%= radio("gaussian", "Gaussian version", versions) %>
+<%= input_file(true) %>
+
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  module use /vol0004/apps/isv/Gaussian/modulefiles
+  module load Gaussian/#{gaussian}
+
+  . $g16root/g16/bsd/g16.profile
+  cd #{dirname(input_file)}
+  g16 < #{basename(input_file)} >& output.txt

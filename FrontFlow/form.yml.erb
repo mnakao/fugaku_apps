@@ -1,0 +1,37 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small")
+  
+  # spack versions ffb -s
+  ffb_versions = ["9.0", "8.1"]
+  
+  # spack versions ffx -s
+  ffx_versions = ["59.01", "03.01"]
+%>
+---
+form:
+<%= form_common %>
+  frontflow:
+    widget: radio
+    direction: horizontal
+    label: Select FrontFrow
+    value: FrontFrow/blue
+    options:
+      - [FrontFrow/blue, les3x.mpi, disable-ffx]
+      - [FrontFrow/X,    lbm3d.mpi, disable-ffb]
+      
+<%= radio("ffb", "FrontFrow/blue version", ffb_versions) %>
+<%= radio("ffx", "FrontFrow/X",            ffx_versions) %>
+<%= working_dir(true) %>
+
+script: |
+<%= script_common %>
+  export FORT90L="-Wl,-T"
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load ffb@#{ffb}
+  spack load ffx@#{ffx}
+
+  cd #{working_dir}
+  mpiexec #{frontflow}

@@ -1,0 +1,33 @@
+<%
+  require './fugaku_apps/utils.rb'
+  
+  form_common, script_common = fugaku_common("small")
+  
+  # spack versions phase0 -s
+  versions = ["2023.01", "2021.02", "2021.01", "2019.02"]
+%>
+---
+form:
+<%= form_common %>
+  version:
+    widget: radio
+    direction: horizontal
+    label: Executable file
+    required: true
+    value: phase.3d
+    options:
+      - [phase.3d, [phase.3d, lhct42t]]
+      - [phase,    [phase,    jnmmtmd]]
+      - [ekcal,    [ekcal,    jnmmtmd]]
+      
+<%= working_dir(true) %>
+<%= text("options", "Options (e.g. ne=8 nk=4)") %>
+
+script: |
+<%= script_common %>
+  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load phase0@2023.01/#{version_2}
+  
+  cd #{working_dir}
+  mpiexec #{version_1} #{:options}
