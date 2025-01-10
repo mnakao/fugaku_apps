@@ -93,9 +93,9 @@ def fugaku_common(rsc_group, enable_threads = true)
     value: Normal
     options:
       - [Normal,    ""]
-      - [Boost,     "#PJM -L \"freq=2200\""]
-      - [Eco,       "#PJM -L \"eco_state=2\""]
-      - [Boost-Eco, "#PJM -L \"freq=2200,eco_state=2\""]
+      - [Boost,     "#PJM -L \\"freq=2200\\""]
+      - [Eco,       "#PJM -L \\"eco_state=2\\""]
+      - [Boost-Eco, "#PJM -L \\"freq=2200,eco_state=2\\""]
     help: Please refer to the manual for details in <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/PowerControlFunction/index.html">English</a> or <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/ja/user_guides/use_latest/PowerControlFunction/index.html">Japanese</a>.
 
   stat:
