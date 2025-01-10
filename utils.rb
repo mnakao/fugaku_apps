@@ -9,9 +9,9 @@ def rsc_group(enable_threads)
       - [ small, small ]
 YAML
   if !enable_threads
-    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (1 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
+    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
   else
-    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (1 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
+    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
   end
 end
 
@@ -34,7 +34,7 @@ def nodes_procs()
     widget: number
     size: 2
     value: [   1,     1 ]
-    min:   [   1,     1 ]
+    min:   [   1,   385 ]
     max:   [ 384, 18432 ]
     step:  [   1,     1 ]
     label: [ "Nodes (1 - 384)", "Processes (1 - 18,432)" ]
@@ -165,7 +165,9 @@ YAML
   end
 
   check = <<-YAML
-  if ((@rsc_group == "small" && @time_1.to_i == 72) || (@rsc_group == "large" && @time_1.to_i == 24)) && @time_2.to_i > 0
+  if @time_1.to_i == 0 && @time_2.to_i == 0
+    halt 500, "Time is too short."
+  elsif ((@rsc_group == "small" && @time_1.to_i == 72) || (@rsc_group == "large" && @time_1.to_i == 24)) && @time_2.to_i > 0
     halt 500, "Exceeded Time (#{@time_1}:#{@time_2}:00)."
   end
   
