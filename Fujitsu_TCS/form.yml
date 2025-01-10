@@ -65,10 +65,6 @@ form:
     max:      [ 24, 59 ]
     step:     [  1,  1 ]
 
-  name:
-    widget: text
-    label: Script name (Up to 63 bytes)
-
   show_advanced_options:
     widget: checkbox
     options:
@@ -80,6 +76,7 @@ form:
     label: [Processes, Threads (1-48)]
     min: [1, 1]
     max: ["", 48]
+    indent: 1
 
   statistics:
     widget: radio
@@ -89,10 +86,12 @@ form:
       - ["(None)", "", disable-pathname]
       - ["Outputs the statistics of the submitted job", "-s"]
       - ["Outputs information about the submitted job on a per-node basis", "-S"]
+    indent: 1
 
   pathname:
     widget: text
     label: Statistics file name
+    indent: 1
 
   bulk:
     widget: number
@@ -100,15 +99,18 @@ form:
     size: 2
     min: [0, 0]
     max: [999999, 999999]
+    indent: 1
 
   use_spack:
     widget: checkbox
     options:
       - [ "Use spack", ". /vol0004/apps/oss/spack/share/spack/setup-env.sh", enable-spack_modules ]
+    indent: 1
 
   # spack find --format '{name}@{version}/{hash:7}' platform=linux os=rhel8 target=a64fx | awk '{print "      - [ "$1", "$1" ]"}'
   spack_modules:
     widget: multi_select
+    indent: 2
     label: Select spack modules
     options:
       - [ abinitmp@1-22/44sxlvc, abinitmp@1-22/44sxlvc ]
@@ -1524,7 +1526,6 @@ script: |
   #PJM -L "node=#{two_dim_nodes_1}x#{two_dim_nodes_2}#{:node_shape}"
   #PJM -L "node=#{three_dim_nodes_1}x#{three_dim_nodes_2}x#{three_dim_nodes_3}#{:node_shape}#{:node_strict}"
   #PJM -L "elapse=#{time_1}:#{time_2}:00"
-  #PJM --name "#{name}"
   #PJM --mpi "proc=#{proc_thread_1}"
   #PJM #{statistics}
   #PJM --pathname #{pathname}

@@ -1,7 +1,12 @@
 form:
-  node_type:
-    widget: select
-    label: Node Type
+  hide_advanced_option:
+    widget: checkbox
     options:
-      - [ Small,  small ]
-      - [ Medium, medium, set-required-aaa-c: false]
+      - [ 'Hide advanced option', '', hide-comment ]
+
+  comment:
+    widget: text
+    label: Comment
+
+script: |
+  #SBATCH --comment=#{comment}

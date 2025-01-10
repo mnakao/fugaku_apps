@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form_common, script_common = fugaku_common("small_and_large")
+  form_common, script_common, check_common = fugaku_common("small_and_large")
 
   # spack versions genesis -s
   versions = [["2.1.4 (Mixed accuracy)", "2.1.4/boswi5t", "set-value-exec_file: spdyn"], ["2.1.4", "2.1.4/hcg2xiz", ""], ["2.1.3 (Mixed accuracy)", "2.1.3/4cwozgo", "disable-exec_file-atdyn"], ["2.1.3", "2.1.3/xdrwjiy", ""], ["2.1.2 (Mixed accuracy)", "2.1.2/h4q2r57", "disable-exec_file-atdyn"], ["2.1.2", "2.1.2/tnifnc3", ""]]
@@ -22,3 +22,6 @@ script: |
 
   cd #{dirname(input_file)}
   mpiexec #{exec_file} #{basename(input_file)}
+
+check: |
+<%= check_common %>

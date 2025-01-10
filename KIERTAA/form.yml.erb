@@ -29,7 +29,7 @@ form:
     value: 0
     min: 0
     max: 9999
-    indent: 3
+    indent: 1
 
   filter:
     widget: radio
@@ -63,7 +63,7 @@ form:
     min: [2, 2]
     max: [99, 99]
     help: [Input number must be odd., Input number must be odd.]
-    indent: 3
+    indent: 1
 
   show_intermediate_filter:
     widget: checkbox
@@ -78,7 +78,7 @@ form:
     min: 3
     max: 99
     step: 2
-    indent: 3
+    indent: 1
     
   show_post_filter:
     widget: checkbox
@@ -93,7 +93,7 @@ form:
     min: 2
     max: 99
     help: Input number must be odd.
-    indent: 3
+    indent: 1
 
   rect:
     widget: number
@@ -102,7 +102,7 @@ form:
     value: [1, 1, 1, 1]
     min: [0, 0, 0, 0]
     max: [9999, 9999, 9999, 9999]
-    indent: 3
+    indent: 1
 
   job_control_filter:
     widget: checkbox
@@ -123,7 +123,7 @@ form:
       - [  4,  4 ]
       - [  2,  2 ]
       - [  1,  1 ]
-    indent: 3
+    indent: 1
       
   debug_mode:
     widget: radio
@@ -133,7 +133,7 @@ form:
     options:
       - [ "No", "no" ]
       - [ "Yes", "yes" ]
-    indent: 3
+    indent: 1
 
   job_type:
     widget: radio
@@ -143,12 +143,12 @@ form:
     options:
       - [Single, single]
       - [Bulk,   bulk, disable-output]
-    indent: 3
+    indent: 1
 
   output:
     widget: text
     label: Output
-    indent: 3
+    indent: 1
 
 script: |
   user_id = "<%= username = ENV['USER'] %>"

@@ -37,7 +37,7 @@ def nodes_procs()
     min:   [   1,     1 ]
     max:   [ 384, 18432 ]
     step:  [   1,     1 ]
-    label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)" ]
+    label: [ "Nodes (1 - 384)", "Processes (1 - 18,432)" ]
     required: [ true, true ]
     help: Nodes x 48 >= Procs
 YAML
@@ -52,7 +52,7 @@ def nodes_procs_threads()
     min:   [   1,     1,  1 ]
     max:   [ 384, 18432, 48 ]
     step:  [   1,     1,  1 ]
-    label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)", "Threads (1 - 48)" ]
+    label: [ "Nodes (1 - 384)", "Processes (1 - 18,432)", "Threads (1 - 48)" ]
     required: [ true, true, true ]
     help: Nodes x 48 >= Procs x Threads
 YAML
@@ -89,6 +89,7 @@ def fugaku_common(rsc_group, enable_threads = true)
     widget: radio
     label: Execution mode
     direction: horizontal
+    indent: 1
     value: Normal
     options:
       - [Normal,    ""]
@@ -101,6 +102,7 @@ def fugaku_common(rsc_group, enable_threads = true)
     widget: radio
     label: Output statistics information
     direction: horizontal
+    indent: 1
     value: (None)
     options:
       - ["(None)",  "", disable-stat_file_name]
@@ -110,16 +112,19 @@ def fugaku_common(rsc_group, enable_threads = true)
   stat_file_name:
     widget: text
     label: Statistics file name
+    indent: 1
 
   mail:
     widget: email
     label: Mail Address
+    indent: 1
 
   mail_option:
     widget: checkbox
     label: Mail option
     direction: horizontal
     separator: ","
+    indent: 1
     options:
       - [Beginning of job execution, b]
       - [End of job execution, e]
@@ -146,7 +151,6 @@ YAML
   
   script << <<-YAML
   #PJM -L "elapse=\#{time_1}:\#{time_2}:00"
-  #PJM --name "\#{_JOB_NAME}"
   \#{mode}
   #PJM \#{stat}
   #PJM --pathname \#{stat_file_name}
@@ -159,8 +163,21 @@ YAML
   elsif rsc_group != "single_procs" && enable_threads
     script << "  export OMP_NUM_THREADS=\#{nodes_procs_threads_3}\n"
   end
+
+  check = <<-YAML
+  if ((@rsc_group == "small" && @time_1.to_i == 72) || (@rsc_group == "large" && @time_1.to_i == 24)) && @time_2.to_i > 0
+    halt 500, "Exceeded Time (#{@time_1}:#{@time_2}:00)."
+  end
   
-  return form.chomp, script.chomp
+  nodes   = @nodes_procs_threads_1.to_i
+  procs   = @nodes_procs_threads_2.to_i
+  threads = @nodes_procs_threads_3.to_i
+  if nodes * 48 < procs * threads
+    halt 500, 'The condition "nodes * 48 >= procs * threads" is not met.'
+  end
+YAML
+
+  return form.chomp, script.chomp, check.chomp
 end
 
 def text(key, label, required = false)
