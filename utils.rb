@@ -246,6 +246,7 @@ def path(key, label, required)
   #{key}:
     widget: path
     label: #{label}
+    value: ""
     required: #{required}
 YAML
 end
@@ -255,6 +256,7 @@ def working_dir(required)
   working_dir:
     widget: path
     label: Working directory
+    value: ""
     show_files: false
     required: #{required}
 YAML
