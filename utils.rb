@@ -174,6 +174,8 @@ YAML
   threads = @nodes_procs_threads_3.to_i
   if nodes * 48 < procs * threads
     halt 500, 'The condition "nodes * 48 >= procs * threads" is not met.'
+  elsif nodes > procs
+    halt 500, 'procs is smaller than nodes.'
   end
 YAML
 
