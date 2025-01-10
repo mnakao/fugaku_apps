@@ -4,7 +4,7 @@ form:
     widget: select
     label: Sample
     options:
-     - ["/2ndfs/rccs-aot/a03011/raw/PE001_ct_s", "/2ndfs/rccs-aot/a03011/raw/PE001_ct_s"]
+      - ["/2ndfs/rccs-aot/a03011/raw/PE001_ct_s", "/2ndfs/rccs-aot/a03011/raw/PE001_ct_s"]
 
   mode:
     widget: select
@@ -25,10 +25,11 @@ form:
 
   center:
     widget: number
-    label: Center
+    label: Center (0 - 9,999)
     value: 0
     min: 0
     max: 9999
+    indent: 3
 
   filter:
     widget: radio
@@ -57,11 +58,12 @@ form:
   pre_filter:
     widget: number
     size: 2
-    label: [Median Filter Kernel Size, Gaussian Filter Kernel Size]
+    label: [Median Filter Kernel Size (2 - 99), Gaussian Filter Kernel Size (2 - 99)]
     value: [3, 3]
     min: [2, 2]
     max: [99, 99]
     help: [Input number must be odd., Input number must be odd.]
+    indent: 3
 
   show_intermediate_filter:
     widget: checkbox
@@ -71,11 +73,12 @@ form:
       
   rmr:
     widget: number
-    label: Ring-Artifact Removal Kernel Size
+    label: Ring-Artifact Removal Kernel Size (3 - 99)
     value: 21
     min: 3
     max: 99
     step: 2
+    indent: 3
     
   show_post_filter:
     widget: checkbox
@@ -85,19 +88,21 @@ form:
       
   binning:
     widget: number
-    label: Binning Size
+    label: Binning Size (3 - 99)
     value: 3
     min: 2
     max: 99
     help: Input number must be odd.
+    indent: 3
 
   rect:
     widget: number
-    label: [Rect Filter (Origin-x), Rect Filter (Origin-y), Rect Filter (ROI-x), Rect Filter (ROI-y)]
+    label: Rect Filter [Origin-x, Origin-y, ROI-x, ROI-y] (0 - 9,999)
     size: 4
     value: [1, 1, 1, 1]
     min: [0, 0, 0, 0]
     max: [9999, 9999, 9999, 9999]
+    indent: 3
 
   job_control_filter:
     widget: checkbox
@@ -110,7 +115,7 @@ form:
     label: Process per node
     value: 24
     options:
-      - [ "", "" ]
+      - [ "(None)", "" ]
       - [ 24, 24 ]
       - [ 12, 12 ]
       - [  8,  8 ]
@@ -118,6 +123,7 @@ form:
       - [  4,  4 ]
       - [  2,  2 ]
       - [  1,  1 ]
+    indent: 3
       
   debug_mode:
     widget: radio
@@ -125,8 +131,9 @@ form:
     value: "No"
     direction: horizontal
     options:
-      - [ No, no ]
-      - [ Yes, yes ]
+      - [ "No", "no" ]
+      - [ "Yes", "yes" ]
+    indent: 3
 
   job_type:
     widget: radio
@@ -136,10 +143,12 @@ form:
     options:
       - [Single, single]
       - [Bulk,   bulk, disable-output]
+    indent: 3
 
   output:
     widget: text
     label: Output
+    indent: 3
 
 script: |
   user_id = "<%= username = ENV['USER'] %>"
