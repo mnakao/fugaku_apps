@@ -98,6 +98,25 @@ def fugaku_common(rsc_group, enable_threads = true)
       - [Boost-Eco, "#PJM -L \\"freq=2200,eco_state=2\\""]
     help: Please refer to the manual for details in <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/PowerControlFunction/index.html">English</a> or <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/ja/user_guides/use_latest/PowerControlFunction/index.html">Japanese</a>.
 
+  mail_option:
+    widget: checkbox
+    label: Mail option
+    direction: horizontal
+    separator: ","
+    indent: 1
+    options:
+      - [Beginning of job execution, b, enable-mail]
+      - [End of job execution, e, enable-mail]
+      - [Restart of job, r, enable-mail]
+      - [Statistics without node information, s, disable-mail_option-Statistical information with node information, enable-mail]
+      - [Statistics with node information, S, disable-mail_option-Statistical information without node information, enable-mail]
+
+  mail:
+    widget: email
+    label: Mail Address
+    required: true
+    indent: 2
+
   stat:
     widget: radio
     label: Output statistics information
@@ -112,25 +131,7 @@ def fugaku_common(rsc_group, enable_threads = true)
   stat_file_name:
     widget: text
     label: Statistics file name
-    indent: 1
-
-  mail:
-    widget: email
-    label: Mail Address
-    indent: 1
-
-  mail_option:
-    widget: checkbox
-    label: Mail option
-    direction: horizontal
-    separator: ","
-    indent: 1
-    options:
-      - [Beginning of job execution, b]
-      - [End of job execution, e]
-      - [Restart of job, r]
-      - [Statistics without node information, s, disable-mail_option-Statistical information with node information]
-      - [Statistics with node information, S, disable-mail_option-Statistical information without node information]
+    indent: 2
 YAML
 
   script = "  #!/usr/bin/env bash\n"
@@ -152,10 +153,10 @@ YAML
   script << <<-YAML
   #PJM -L "elapse=\#{time_1}:\#{time_2}:00"
   \#{mode}
-  #PJM \#{stat}
-  #PJM --pathname \#{stat_file_name}
   #PJM --mail-list \#{mail}
   #PJM -m \#{mail_option}
+  #PJM \#{stat}
+  #PJM --pathname \#{stat_file_name}
 YAML
 
   if rsc_group == "single_procs" && enable_threads
