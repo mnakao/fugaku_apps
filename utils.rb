@@ -39,7 +39,7 @@ def nodes_procs()
     step:  [   1,     1 ]
     label: [ "Nodes (1 - 384)", "Processes (1 - 18,432)" ]
     required: [ true, true ]
-    help: Nodes x 48 >= Procs
+    help: 'Nodes x 48 >= Processes' and 'Nodes >= Processes' must hold.
 YAML
 end
 
@@ -54,7 +54,7 @@ def nodes_procs_threads()
     step:  [   1,     1,  1 ]
     label: [ "Nodes (1 - 384)", "Processes (1 - 18,432)", "Threads (1 - 48)" ]
     required: [ true, true, true ]
-    help: Nodes x 48 >= Procs x Threads
+    help: 'Nodes x 48 >= Processes x Threads' and 'Nodes >= Processes' must hold.
 YAML
 end
 
