@@ -156,7 +156,7 @@ YAML
   #PJM --mail-list \#{mail}
   #PJM -m \#{mail_option}
   #PJM \#{stat}
-  #PJM --pathname \#{stat_file_name}
+  #PJM --spath \#{stat_file_name}
 YAML
 
   if rsc_group == "single_procs" && enable_threads
