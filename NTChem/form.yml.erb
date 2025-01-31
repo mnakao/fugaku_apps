@@ -6,7 +6,7 @@
   # spack versions ntchem -s
   versions = ["24.04", "13.0.0", "12.2.0"]
   
-  calcs = [["HF/DFT (Hartree–Fock/Density Functional Theory)", "HF/DFT"]]
+  calcs = [["HF/DFT (Hartree-Fock/Density Functional Theory)", "HF/DFT"]]
   working_dir_types = [["$HOME/$PJM_JOBID",    "${HOME}/${PJM_JOBID}", "disable-working_dir_shared", "disable-working_dir"],
                        ["$PJM_SHAREDTMP",      "${PJM_SHAREDTMP}",     "disable-working_dir_jobid",  "disable-working_dir", "enable-output_dir"],
 		       ["Specify a directory", "",                     "disable-working_dir_jobid",  "disable-working_dir_shared"]]
