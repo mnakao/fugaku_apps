@@ -1,3 +1,5 @@
+EXCLUDED_GROUPS = ["f-op", "fugaku", "oss-adm"] # "Group names starting with "isv" are deleted in the code.
+
 def rsc_group(enable_threads)
   yaml = <<-YAML
   rsc_group:
@@ -9,9 +11,9 @@ def rsc_group(enable_threads)
       - [ small, small ]
 YAML
   if !enable_threads
-    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
+    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Max run hours (0 - 24), set-max-time_1: 24]' + "\n"
   else
-    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum run hours (0 - 24), set-max-time_1: 24]' + "\n"
+    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Max run hours (0 - 24), set-max-time_1: 24]' + "\n"
   end
 end
 
@@ -37,9 +39,9 @@ def nodes_procs()
     min:   [   1,   385 ]
     max:   [ 384, 18432 ]
     step:  [   1,     1 ]
-    label: [ "Nodes (1 - 384)", "Processes (1 - 18,432)" ]
+    label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)" ]
     required: [ true, true ]
-    help: "\\"Nodes x 48 >= Processes\\" and \\"Nodes >= Processes\\" must hold."
+    help: "\\"Nodes x 48 >= Procs\\" and \\"Nodes >= Procs\\" must hold."
 YAML
 end
 
@@ -52,9 +54,9 @@ def nodes_procs_threads()
     min:   [   1,     1,  1 ]
     max:   [ 384, 18432, 48 ]
     step:  [   1,     1,  1 ]
-    label: [ "Nodes (1 - 384)", "Processes (1 - 18,432)", "Threads (1 - 48)" ]
+    label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)", "Threads (1 - 48)" ]
     required: [ true, true, true ]
-    help: "\\"Nodes x 48 >= Processes x Threads\\" and \\"Nodes >= Processes\\" must hold."
+    help: "\\"Nodes x 48 >= Procs x Threads\\" and \\"Nodes >= Procs\\" must hold."
 YAML
 end
 
@@ -72,7 +74,7 @@ def fugaku_common(rsc_group, enable_threads = true)
   form << <<-YAML
   time:
     widget:   number
-    label:    [ Maximum run hours (0 - 72), Maximum run minutes (0 - 59) ]
+    label:    [ Max run hours (0 - 72), Max run minutes (0 - 59) ]
     size:     2
     value:    [  1,  0 ]
     min:      [  0,  0 ]
@@ -80,6 +82,17 @@ def fugaku_common(rsc_group, enable_threads = true)
     step:     [  1,  1 ]
     required: [ true, true]
 
+  group:
+    widget: select
+    label: Group
+    options:
+YAML
+  groups = `groups`.split - EXCLUDED_GROUPS
+  groups.each do |g|
+    form << "      - [\"" + g + "\" , \"" + g + "\"]\n" unless g.start_with?("isv")
+  end
+  
+  form << <<-YAML  
   show_advanced_option:
     widget: checkbox
     options:
@@ -134,7 +147,7 @@ def fugaku_common(rsc_group, enable_threads = true)
     indent: 2
 YAML
 
-  script = "  #!/usr/bin/env bash\n"
+  script = "  #!/bin/bash\n"
   if rsc_group == "small_and_large"
     script << "  #PJM -L \"rscgrp=\#{rsc_group}\"\n"
   elsif rsc_group == "small"
@@ -152,6 +165,7 @@ YAML
   
   script << <<-YAML
   #PJM -L "elapse=\#{time_1}:\#{time_2}:00"
+  #PJM -g \#{group}
   \#{mode}
   #PJM --mail-list \#{mail}
   #PJM -m \#{mail_option}
@@ -242,6 +256,27 @@ YAML
   return form
 end
 
+def add_favorites
+  groups = `groups`.split
+  favorites = []
+
+  unless groups.empty?
+    groups.each do |g|
+      next if g.start_with?("isv")
+
+      ["/data", "/share", "/2ndfs"].each do |base|
+        dir = File.join(base, g)
+        favorites << "      - \"#{dir}\"\n" if File.directory?(dir)
+      end
+    end
+  end
+  
+  unless favorites.empty?
+    form = "favorites:\n"
+    favorites.each { |fav| form += fav }
+  end
+end
+
 def path(key, label, required)
   <<-YAML
   #{key}:
@@ -249,6 +284,7 @@ def path(key, label, required)
     label: #{label}
     value: ""
     required: #{required}
+    #{add_favorites}
 YAML
 end
 
@@ -260,7 +296,10 @@ def working_dir(required)
     value: ""
     show_files: false
     required: #{required}
+    #{add_favorites}
 YAML
+
+  return form
 end
 
 def exec_file(binaries, value = nil, widget = "select")
