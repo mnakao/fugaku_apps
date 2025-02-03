@@ -256,7 +256,7 @@ YAML
   return form
 end
 
-def add_favorites
+def add_favorites()
   groups = `groups`.split
   favorites = []
 
@@ -271,10 +271,11 @@ def add_favorites
     end
   end
   
-  unless favorites.empty?
-    form = "favorites:\n"
-    favorites.each { |fav| form += fav }
-  end
+  return nil if favorites.empty?
+
+  form = "favorites:\n"
+  favorites.each { |fav| form += fav }
+  return form
 end
 
 def path(key, label, required)
@@ -284,7 +285,7 @@ def path(key, label, required)
     label: #{label}
     value: ""
     required: #{required}
-    #{add_favorites}
+    #{add_favorites()}
 YAML
 end
 
@@ -296,7 +297,7 @@ def working_dir(required)
     value: ""
     show_files: false
     required: #{required}
-    #{add_favorites}
+    #{add_favorites()}
 YAML
 
   return form
