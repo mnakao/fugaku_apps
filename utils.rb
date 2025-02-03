@@ -85,6 +85,7 @@ def fugaku_common(rsc_group, enable_threads = true)
   group:
     widget: select
     label: Group
+    required: true
     options:
 YAML
   groups = `groups`.split - EXCLUDED_GROUPS
