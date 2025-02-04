@@ -1,5 +1,5 @@
 ---
-name: Batch Script
+name: Job Script (Fujitsu TCS)
 icon: logo.png
 description: |
   This application generates an arbitrary job script for Fugaku.

@@ -299,8 +299,6 @@ def working_dir(required)
     required: #{required}
     #{add_favorites()}
 YAML
-
-  return form
 end
 
 def exec_file(binaries, value = nil, widget = "select")

@@ -15,7 +15,7 @@
 ---
 form:
 <%= form_common %>
-<%= radio("genesis", "GENESIS version", versions) %>
+<%= select("genesis", "GENESIS version", versions) %>
 <%= exec_file(binaries, nil, "radio") %>
 <%= input_file(true) %>
 
