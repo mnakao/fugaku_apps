@@ -1,3 +1,6 @@
+<%
+  require './fugaku_apps/utils.rb'
+%>
 ---
 form:
   nodes:
@@ -1522,6 +1525,9 @@ form:
       - [ zstd@1.5.5/bluxqsp, zstd@1.5.5/bluxqsp ]
       - [ zstd@1.5.5/o7dcxya, zstd@1.5.5/o7dcxya ]
       - [ zstd@1.5.5/devcpoq, zstd@1.5.5/devcpoq ]
+
+header:
+<%= header() %>
 
 script: |
   #!/bin/bash

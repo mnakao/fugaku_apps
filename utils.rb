@@ -1,6 +1,6 @@
 EXCLUDED_GROUPS = ["f-op", "fugaku", "oss-adm"] # "Group names starting with "isv" are deleted in the code.
 
-def add_favorites()
+def favorites()
   groups = `groups`.split
   favorites = []
 
@@ -20,6 +20,36 @@ def add_favorites()
   form = "favorites:\n"
   favorites.each { |fav| form += fav }
   return form
+end
+
+def header()
+  groups = `groups`.split
+  initial_dir = if groups.empty?
+                  Dir.home
+                else
+                  groups.each do |group|
+                    next if group.start_with?("isv")
+                    candidate_dir = File.join("/data", group)
+                    break candidate_dir if File.directory?(candidate_dir)
+                  end || Dir.home
+                end
+  
+  <<-YAML
+  _script_location:
+    widget:     path
+    value:      #{initial_dir}
+    label:      Script Location
+    show_files: false
+    required:   true
+    #{favorites()}
+
+  _script:
+    widget:   text
+    size :    2
+    label:    [Script Name, Job Nam2e]
+    value:    [job.sh, ""]
+    required: [true, false]
+YAML
 end
 
 def rsc_group(enable_threads)
@@ -171,34 +201,6 @@ YAML
     indent: 2
 YAML
 
-  groups = `groups`.split
-  initial_dir = if groups.empty?
-                  Dir.home
-                else
-                  groups.each do |group|
-                    next if group.start_with?("isv")
-                    candidate_dir = File.join("/data", group)
-                    break candidate_dir if File.directory?(candidate_dir)
-                  end || Dir.home
-                end
-                  
-  header = <<-YAML
-  _script_location:
-    widget:     path
-    value:      #{initial_dir}
-    label:      Script Location
-    show_files: false
-    required:   true
-    #{add_favorites()}
-
-  _script:
-    widget:   text
-    size :    2
-    label:    [Script Name, Job Name]
-    value:    [job.sh, ""]
-    required: [true, false]
-YAML
-  
   script = "  #!/bin/bash\n"
   if rsc_group == "small_and_large"
     script << "  #PJM -L \"rscgrp=\#{rsc_group}\"\n"
@@ -315,7 +317,7 @@ def path(key, label, required)
     label: #{label}
     value: ""
     required: #{required}
-    #{add_favorites()}
+    #{favorites()}
 YAML
 end
 
@@ -327,7 +329,7 @@ def working_dir(required)
     value: ""
     show_files: false
     required: #{required}
-    #{add_favorites()}
+    #{favorites()}
 YAML
 end
 
