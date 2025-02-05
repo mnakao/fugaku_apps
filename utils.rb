@@ -46,7 +46,7 @@ def header()
   _script:
     widget:   text
     size :    2
-    label:    [Script Name, Job Nam2e]
+    label:    [Script Name, Job Name]
     value:    [job.sh, ""]
     required: [true, false]
 YAML
