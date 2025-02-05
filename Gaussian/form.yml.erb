@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form_common, script_common = fugaku_common("single_procs")
+  form, header, script, check = fugaku_common("single_procs")
 
   # module use /vol0004/apps/isv/Gaussian/modulefiles
   # module avail Gaussian
@@ -9,12 +9,15 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("gaussian", "Gaussian version", versions) %>
 <%= input_file(true) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   module use /vol0004/apps/isv/Gaussian/modulefiles

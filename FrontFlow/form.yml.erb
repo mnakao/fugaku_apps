@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions ffb -s
   ffb_versions = ["9.0", "8.1"]
@@ -11,7 +11,7 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
   frontflow:
     widget: radio
     direction: horizontal
@@ -25,8 +25,11 @@ form:
 <%= radio("ffx", "FrontFrow/X",            ffx_versions) %>
 <%= working_dir(true) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   export FORT90L="-Wl,-T"
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh

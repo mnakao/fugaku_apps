@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions pimd -s
   # spack find --paths pimd@2.6.1-aenet
@@ -10,13 +10,16 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("pimd", "PIMD version", versions) %>
 <%= working_dir(true) %>
 <%= exec_file(binaries, "pimd.mpi.x") %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load pimd@#{pimd}

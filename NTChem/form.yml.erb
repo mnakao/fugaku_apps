@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form_common, script_common = fugaku_common("small_and_large")
+  form, header, script, check = fugaku_common("small_and_large")
 
   # spack versions ntchem -s
   versions = ["24.04", "13.0.0", "12.2.0"]
@@ -13,7 +13,7 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("ntchem", "NTChem version", versions) %>
 <%= radio("working_dir_type", "Working directory type", working_dir_types, nil, "Copy the input file to the directory where NTChem will run.") %>
 <%= working_dir(true) %>
@@ -24,8 +24,11 @@ form:
     help: $PJM_SHAREDTMP/*.MO are copied to the output directory after running NTChem.
     required: true
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   export OMP_STACKSIZE=128M
 
   WORKING_DIR=#{working_dir_type}

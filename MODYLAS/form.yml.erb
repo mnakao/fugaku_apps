@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small_and_large")
+  form, header, script, check = fugaku_common("small_and_large")
   
   # spack versions modylas-new -s
   versions = [["1.1.0 (ff=charmm)", "1.1.0/qpbwc72"], ["1.1.0 (ff=gaff)", "1.1.0/inzalz2"], ["1.1.0 (ff=oplsaa)", "1.1.0/zhajus2"]]
@@ -11,14 +11,17 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("modylas", "MODYLAS version", versions) %>
 <%= working_dir(true) %>
 <%= exec_file(binaries) %>
 <%= text("session_name", "Session name", true) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load modylas-new@#{modylas}

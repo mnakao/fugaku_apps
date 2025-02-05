@@ -1,5 +1,27 @@
 EXCLUDED_GROUPS = ["f-op", "fugaku", "oss-adm"] # "Group names starting with "isv" are deleted in the code.
 
+def add_favorites()
+  groups = `groups`.split
+  favorites = []
+
+  unless groups.empty?
+    groups.each do |g|
+      next if g.start_with?("isv")
+
+      ["/data", "/share", "/2ndfs"].each do |base|
+        dir = File.join(base, g)
+        favorites << "      - \"#{dir}\"\n" if File.directory?(dir)
+      end
+    end
+  end
+
+  return nil if favorites.empty?
+
+  form = "favorites:\n"
+  favorites.each { |fav| form += fav }
+  return form
+end
+
 def rsc_group(enable_threads)
   yaml = <<-YAML
   rsc_group:
@@ -92,6 +114,7 @@ YAML
   groups.each do |g|
     form << "      - [\"" + g + "\" , \"" + g + "\"]\n" unless g.start_with?("isv")
   end
+  form << "      - [\"(None)\", \"\"]\n"
   
   form << <<-YAML  
   show_advanced_option:
@@ -148,6 +171,34 @@ YAML
     indent: 2
 YAML
 
+  groups = `groups`.split
+  initial_dir = if groups.empty?
+                  Dir.home
+                else
+                  groups.each do |group|
+                    next if group.start_with?("isv")
+                    candidate_dir = File.join("/data", group)
+                    break candidate_dir if File.directory?(candidate_dir)
+                  end || Dir.home
+                end
+                  
+  header = <<-YAML
+  _script_location:
+    widget:     path
+    value:      #{initial_dir}
+    label:      Script Location
+    show_files: false
+    required:   true
+    #{add_favorites()}
+
+  _script:
+    widget:   text
+    size :    2
+    label:    [Script Name, Job Name]
+    value:    [job.sh, ""]
+    required: [true, false]
+YAML
+  
   script = "  #!/bin/bash\n"
   if rsc_group == "small_and_large"
     script << "  #PJM -L \"rscgrp=\#{rsc_group}\"\n"
@@ -197,7 +248,7 @@ YAML
   end
 YAML
 
-  return form.chomp, script.chomp, check.chomp
+  return form.chomp, header.chomp, script.chomp, check.chomp
 end
 
 def text(key, label, required = false)
@@ -254,28 +305,6 @@ def radio(key, label, options, value = nil, help = nil)
 YAML
   form << "    help: #{help}" if help != nil
 
-  return form
-end
-
-def add_favorites()
-  groups = `groups`.split
-  favorites = []
-
-  unless groups.empty?
-    groups.each do |g|
-      next if g.start_with?("isv")
-
-      ["/data", "/share", "/2ndfs"].each do |base|
-        dir = File.join(base, g)
-        favorites << "      - \"#{dir}\"\n" if File.directory?(dir)
-      end
-    end
-  end
-  
-  return nil if favorites.empty?
-
-  form = "favorites:\n"
-  favorites.each { |fav| form += fav }
   return form
 end
 

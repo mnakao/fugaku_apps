@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form_common, script_common = fugaku_common("small_and_large", false)
+  form, header, script, check = fugaku_common("small_and_large", false)
 
   # spack versions openfoam-org -s
   foundation_versions = ["11", "10", "9"]
@@ -11,7 +11,7 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
   select_openform:
     widget: radio
     label: Select OpenForm
@@ -23,8 +23,12 @@ form:
 <%= radio("foundation_version", "Foundation version", foundation_versions) %>
 <%= radio("opencfd_version", "OpenCFD version", opencfd_versions) %>
 <%= working_dir(true) %>
+
+header:
+<%= header %>
+
 script: |
-<%= script_common %>  
+<%= script %>  
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load openfoam-org@#{foundation_version} arch=linux-rhel8-a64fx
   spack load openfoam@#{opencfd_version} arch=linux-rhel8-a64fx

@@ -1524,7 +1524,7 @@ form:
       - [ zstd@1.5.5/devcpoq, zstd@1.5.5/devcpoq ]
 
 script: |
-  #!/usr/bin/env bash
+  #!/bin/bash
   #PJM -L "node=#{one_dim_nodes}#{:node_shape}"
   #PJM -L "node=#{two_dim_nodes_1}x#{two_dim_nodes_2}#{:node_shape}"
   #PJM -L "node=#{three_dim_nodes_1}x#{three_dim_nodes_2}x#{three_dim_nodes_3}#{:node_shape}#{:node_strict}"

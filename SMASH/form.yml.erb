@@ -1,19 +1,22 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions smash -s
   versions = ["3.0.2", "3.0.0"]
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("smash", "SMASH version", versions) %>
 <%= input_file(true) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load smash@#{smash}

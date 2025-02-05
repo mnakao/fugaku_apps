@@ -1,19 +1,22 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form_common, script_common = fugaku_common("small_and_large")
+  form, header, script, check = fugaku_common("small_and_large")
 
   # spack versions salmon-tddft -s
   versions = ["2.2.0", "2.1.0"]
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("salmon", "SALMON version", versions) %>
 <%= input_file(true) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
 
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load salmon-tddft@#{salmon}

@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions openmx -s
   versions = ["3.9.9"] # Since there is only one version, we do not create options in the form.
@@ -11,13 +11,16 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= exec_file(binaries, "openmx") %>
 <%= input_file(true) %>
 <%= text("options", "Options (e.g. -nt 2)") %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
 
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load openmx@3.9.9

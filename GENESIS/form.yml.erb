@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form_common, script_common, check_common = fugaku_common("small_and_large")
+  form, header, script, check = fugaku_common("small_and_large")
 
   # spack versions genesis -s
   versions = [["2.1.4 (Mixed accuracy)", "2.1.4/boswi5t", "set-value-exec_file: spdyn", "disable-exec_file-atdyn"],
@@ -14,13 +14,16 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= select("genesis", "GENESIS version", versions) %>
 <%= exec_file(binaries, nil, "radio") %>
 <%= input_file(true) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
 
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load genesis@#{genesis}
@@ -29,4 +32,4 @@ script: |
   mpiexec #{exec_file} #{basename(input_file)}
 
 check: |
-<%= check_common %>
+<%= check %>

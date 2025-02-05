@@ -1,14 +1,14 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small_and_large")
+  form, header, script, check = fugaku_common("small_and_large")
   
   # spack versions scale -s
   versions = ["5.5.2", "5.5.1", "5.4.5", "5.3.6", "5.2.6"]
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("scale", "SCALE version", versions) %>
 <%= working_dir(true) %>
 <%= path("rm_pp_file",   "Input file for scale-rm_pp (If blank, scale-rm_pp will not run)", false) %>
@@ -16,9 +16,12 @@ form:
 <%= path("rm_file",      "Input file for scale-rm (If blank, scale-rm will not run)", false) %>
 <%= path("sno_file",     "Input file for sno (If blank, sno will not run)", false) %>
 <%= path("net2g_file",   "Input file for net2g (If blank, net2g will not run)", false) %>
-    
+
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   export FORT90L=-Wl,-T
   export PLE_MPI_STD_EMPTYFILE=off

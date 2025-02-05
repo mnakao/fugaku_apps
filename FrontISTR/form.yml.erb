@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions fugaku-frontistr -s
   versions = ["master"] # Since there is only one version, we do not create options in the form.
@@ -11,7 +11,7 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= working_dir(true) %>
   pre_execute:
     widget: checkbox
@@ -20,8 +20,11 @@ form:
       - ["Execute hecmw_part1", "mpiexec -n 1 hecmw_part1"]
 <%= exec_file(binaries) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load fugaku-frontistr@master

@@ -1,20 +1,23 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions lammps -s
   versions = ["20230802.3", "20230802.2", "20230802.1"]
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("lammps", "LAMMPS version", versions) %>
 <%= input_file(true) %>
 <%= text("options", "Options (e.g. -pk omp 2)") %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load lammps@#{lammps}

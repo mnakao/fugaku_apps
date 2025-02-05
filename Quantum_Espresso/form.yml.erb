@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions quantum-espresso -s
   versions = ["7.3", "7.2"]
@@ -12,14 +12,17 @@
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= radio("quantum_espresso", "Quantum Espresso version", versions) %>
 <%= exec_file(binaries) %>
 <%= input_file(true) %>
 <%= text("options", "Options (e.g. -nk 2)") %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load quantum-espresso@#{quantum_espresso}

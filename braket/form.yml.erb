@@ -1,18 +1,21 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form_common, script_common = fugaku_common("small")
+  form, header, script, check = fugaku_common("small")
   
   # spack versions braket -s
   versions = ["1.6.0"] # Since there is only one version, we do not create options in the form.
 %>
 ---
 form:
-<%= form_common %>
+<%= form %>
 <%= input_file(true) %>
 
+header:
+<%= header %>
+
 script: |
-<%= script_common %>
+<%= script %>
   
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load braket
