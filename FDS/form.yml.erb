@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small_and_large")
+  form, header, script, check, submit = fugaku_common("small_and_large")
   
   # spack versions fds -s
   versions = ["6.8.0", "6.7.9", "6.7.8", "6.7.7"]
@@ -26,3 +26,6 @@ script: |
 
 check: |
   raise "Time" if @time_1 == 24 && @time_2 != 0
+
+submit: |
+<%= submit %>

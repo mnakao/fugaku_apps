@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small_and_large")
+  form, header, script, check, submit = fugaku_common("small_and_large")
 
   # spack versions mvmc -s
   versions = ["1.2.0"] #Since there is only one version, we do not create options in the form.
@@ -36,3 +36,5 @@ script: |
   mpiexec #{executable} #{se_mode} #{basename(vmc_input_file)}
   #{executable} #{basename(uhf_input_file)} &> output.${PJM_JOBID}
 
+submit: |
+<%= submit %>

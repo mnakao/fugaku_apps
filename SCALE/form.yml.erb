@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small_and_large")
+  form, header, script, check, submit = fugaku_common("small_and_large")
   
   # spack versions scale -s
   versions = ["5.5.2", "5.5.1", "5.4.5", "5.3.6", "5.2.6"]
@@ -37,3 +37,6 @@ script: |
   mpiexec scale-rm #{rm_file}
   mpiexec sno #{sno_file}
   mpiexec net2g #{net2g_file}
+
+submit: |
+<%= submit %>

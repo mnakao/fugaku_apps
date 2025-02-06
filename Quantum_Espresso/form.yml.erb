@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small")
+  form, header, script, check, submit = fugaku_common("small")
   
   # spack versions quantum-espresso -s
   versions = ["7.3", "7.2"]
@@ -29,3 +29,6 @@ script: |
   
   cd #{dirname(input_file)}
   mpiexec #{exec_file} -in #{basename(input_file)} #{:options}
+
+submit: |
+<%= submit %>

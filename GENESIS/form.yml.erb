@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check = fugaku_common("small_and_large")
+  form, header, script, check, submit = fugaku_common("small_and_large")
 
   # spack versions genesis -s
   versions = [["2.1.4 (Mixed accuracy)", "2.1.4/boswi5t", "set-value-exec_file: spdyn", "disable-exec_file-atdyn"],
@@ -33,3 +33,6 @@ script: |
 
 check: |
 <%= check %>
+
+submit: |
+<%= submit %>

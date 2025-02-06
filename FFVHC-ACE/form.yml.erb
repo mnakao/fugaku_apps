@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small_and_large")
+  form, header, script, check, submit = fugaku_common("small_and_large")
   
   # spack versions ffvhc-ace -s
   versions = ["0.1"] # Since there is only one version, we do not create options in the form.
@@ -34,3 +34,6 @@ script: |
   
   cd #{dirname(input_file)}
   mpiexec ffv-hc-ace-NS #{basename(input_file)}
+
+submit: |
+<%= submit %>

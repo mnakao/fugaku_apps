@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small")
+  form, header, script, check, submit = fugaku_common("small")
   
   # spack versions braket -s
   versions = ["1.6.0"] # Since there is only one version, we do not create options in the form.
@@ -22,3 +22,6 @@ script: |
   
   cd #{dirname(input_file)}
   mpiexec bra --mode simple --file #{basename(input_file)}
+
+submit: |
+<%= submit %>

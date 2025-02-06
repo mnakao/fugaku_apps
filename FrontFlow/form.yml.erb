@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small")
+  form, header, script, check, submit = fugaku_common("small")
   
   # spack versions ffb -s
   ffb_versions = ["9.0", "8.1"]
@@ -38,3 +38,6 @@ script: |
 
   cd #{working_dir}
   mpiexec #{frontflow}
+
+submit: |
+<%= submit %>

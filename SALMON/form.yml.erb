@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check = fugaku_common("small_and_large")
+  form, header, script, check, submit = fugaku_common("small_and_large")
 
   # spack versions salmon-tddft -s
   versions = ["2.2.0", "2.1.0"]
@@ -23,4 +23,6 @@ script: |
 
   cd #{dirname(input_file)}
   mpiexec -stdin #{basename(input_file)} salmon
-  
+
+submit: |
+<%= submit %>

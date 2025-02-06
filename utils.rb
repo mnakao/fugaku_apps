@@ -52,6 +52,13 @@ def header()
 YAML
 end
 
+def submit()
+  <<-BASH
+  #!/bin/bash
+  OC_SUBMIT_OPTIONS=\"--no-check-directory\"
+BASH
+end
+
 def rsc_group(enable_threads)
   yaml = <<-YAML
   rsc_group:
@@ -250,7 +257,7 @@ YAML
   end
 YAML
 
-  return form.chomp, header.chomp, script.chomp, check.chomp
+  return form.chomp, header.chomp, script.chomp, check.chomp, submit.chomp
 end
 
 def text(key, label, required = false)

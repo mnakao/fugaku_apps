@@ -1543,3 +1543,7 @@ script: |
   #{use_spack}
   spack load #{spack_modules}
   export OMP_NUM_THREADS=#{proc_thread_2}
+
+submit: |
+  OC_SUBMIT_OPTIONS='--no-check-directory'
+  

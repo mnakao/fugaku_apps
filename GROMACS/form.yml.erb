@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small")
+  form, header, script, check, submit = fugaku_common("small")
   
   # spack versions gromacs -s
   versions = ["2024.2", "2024.1", "2024"]
@@ -24,3 +24,6 @@ script: |
   
   cd #{working_dir}
   mpiexec gmx_mpi #{:options}
+
+submit: |
+<%= submit %>

@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-   form, header, script, check = fugaku_common("small_and_large")
+   form, header, script, check, submit = fugaku_common("small_and_large")
   
   # spack versions abinitmp -s
   versions = [["2-8", "2-8", "disable-exec_file24", "disable-exec_file122"], ["2-4", "2-4", "disable-exec_file28", "disable-exec_file122"], ["1-22", "1-22", "disable-exec_file28", "disable-exec_file24"]]
@@ -35,3 +35,6 @@ script: |
   mpiexec #{exec_file28} < #{basename(input_file)}
   mpiexec #{exec_file24} < #{basename(input_file)}
   mpiexec #{exec_file122} < #{basename(input_file)}
+
+submit: |
+<%= submit %>

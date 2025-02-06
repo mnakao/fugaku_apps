@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small")
+  form, header, script, check, submit = fugaku_common("small")
   
   # spack versions openmx -s
   versions = ["3.9.9"] # Since there is only one version, we do not create options in the form.
@@ -28,3 +28,5 @@ script: |
   cd #{dirname(input_file)}
   mpiexec #{exec_file} #{basename(:input_file)} #{:options}
   
+submit: |
+<%= submit %>

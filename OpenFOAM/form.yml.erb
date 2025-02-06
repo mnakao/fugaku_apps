@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check = fugaku_common("small_and_large", false)
+  form, header, script, check, submit = fugaku_common("small_and_large", false)
 
   # spack versions openfoam-org -s
   foundation_versions = ["11", "10", "9"]
@@ -35,4 +35,6 @@ script: |
   
   cd #{working_dir}
   // Please write the commands below.
-  
+
+submit: |
+<%= submit %>

@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small_and_large")
+  form, header, script, check, submit = fugaku_common("small_and_large")
   
   # spack versions modylas-new -s
   versions = [["1.1.0 (ff=charmm)", "1.1.0/qpbwc72"], ["1.1.0 (ff=gaff)", "1.1.0/inzalz2"], ["1.1.0 (ff=oplsaa)", "1.1.0/zhajus2"]]
@@ -28,3 +28,6 @@ script: |
 
   cd #{working_dir}
   mpiexec #{:exec_file} #{session_name}
+
+submit: |
+<%= submit %>

@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small")
+  form, header, script, check, submit = fugaku_common("small")
   
   # spack versions pimd -s
   # spack find --paths pimd@2.6.1-aenet
@@ -26,3 +26,6 @@ script: |
 
   cd #{working_dir}
   mpiexec lmp -in #{exec_file}
+
+submit: |
+<%= submit %>

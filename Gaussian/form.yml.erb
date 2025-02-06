@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check = fugaku_common("single_procs")
+  form, header, script, check, submit = fugaku_common("single_procs")
 
   # module use /vol0004/apps/isv/Gaussian/modulefiles
   # module avail Gaussian
@@ -26,3 +26,6 @@ script: |
   . $g16root/g16/bsd/g16.profile
   cd #{dirname(input_file)}
   g16 < #{basename(input_file)} >& output.txt
+
+submit: |
+<%= submit %>

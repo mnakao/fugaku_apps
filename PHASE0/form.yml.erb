@@ -1,7 +1,7 @@
 <%
   require './fugaku_apps/utils.rb'
   
-  form, header, script, check = fugaku_common("small")
+  form, header, script, check, submit = fugaku_common("small")
   
   # spack versions phase0 -s
   versions = ["2023.01", "2021.02", "2021.01", "2019.02"]
@@ -34,3 +34,6 @@ script: |
   
   cd #{working_dir}
   mpiexec #{version_1} #{:options}
+
+submit: |
+<%= submit %>
