@@ -22,22 +22,22 @@ def favorites()
   return form
 end
 
-def header()
+def default_dir()
   groups = `groups`.split
-  initial_dir = if groups.empty?
-                  Dir.home
-                else
-                  groups.each do |group|
-                    next if group.start_with?("isv")
-                    candidate_dir = File.join("/data", group)
-                    break candidate_dir if File.directory?(candidate_dir)
-                  end || Dir.home
-                end
+  groups.each do |group|
+    next if group.start_with?("isv")    
+    candidate_dir = File.join("/data", group)
+    return candidate_dir if File.directory?(candidate_dir)
+  end
   
+  Dir.home
+end
+
+def header()
   <<-YAML
   _script_location:
     widget:     path
-    value:      #{initial_dir}
+    value:      #{default_dir()}
     label:      Script Location
     show_files: false
     required:   true

@@ -27,8 +27,8 @@ script: |
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load quantum-espresso@#{quantum_espresso}
   
-  cd #{dirname(input_file)}
-  mpiexec #{exec_file} -in #{basename(input_file)} #{:options}
+  cd #{dirname(input_file)}/
+  mpiexec #{exec_file} -in ./#{basename(input_file)} #{:options}
 
 submit: |
 <%= submit %>
