@@ -358,7 +358,7 @@ def llio(target)
     label: LLIO target
     widget: radio
     direction: horizontal
-    value: "Only input file"
+    value: "(None)"
     help: Enable this setting when using more than 7,000 nodes or 28,000 processes. To reduce IO load, the targets are transferred to the cache area. \
           <a href=\"https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/LayeredStorageAndLLIO/index.html\">More info</a>.
     options:
