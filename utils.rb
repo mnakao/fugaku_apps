@@ -67,7 +67,7 @@ def rsc_group(enable_threads)
     label: Resource group
     value: small
     options:
-      - [ small, small, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
+      - [ small, small, disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
 YAML
   if !enable_threads
     yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
@@ -362,16 +362,20 @@ def llio(target)
     help: Enable this setting when using more than 7,000 nodes or 28,000 processes. To reduce IO load, the targets are transferred to the cache area. \
           <a href=\"https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/LayeredStorageAndLLIO/index.html\">More info</a>.
     options:
-      - ["(None)", "", disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
+      - ["(None)", "", disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
 YAML
   if target == "file"
-    form << "      - [\"Only input file\", \"\", hide-llio_exec_file_transfer, hide-llio_file_transfer, disable-llio_dir_transfer ]\n"
-    form << "      - [\"Directory where input file exists\", \"\", hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer ]\n"
+    form << "      - [\"Only input file\", \"\", hide-llio_comment, hide-llio_exec_file_transfer, hide-llio_file_transfer, disable-llio_dir_transfer ]\n"
+    form << "      - [\"Directory where input file exists\", \"\", hide-llio_comment, hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer ]\n"
   elsif target == "directory"
-    form << "      - [\"Working directory\", \"\", hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer]\n"
+    form << "      - [\"Working directory\", \"\", hide-llio_comment, hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer]\n"
   end
   
   form += <<-YAML
+  llio_comment:
+    widget: text
+    value: "# LLIO transfer"
+
   llio_exec_file_transfer:
     widget: text
     value: "/usr/bin/llio_transfer"
