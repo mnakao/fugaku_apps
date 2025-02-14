@@ -18,6 +18,7 @@ form:
 <%= select("genesis", "GENESIS version", versions) %>
 <%= exec_file(binaries, nil, "radio") %>
 <%= input_file(true) %>
+<%= llio("file") %>
 
 header:
 <%= header %>
@@ -28,6 +29,9 @@ script: |
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load genesis@#{genesis}
 
+  #{llio_exec_file_transfer} `which #{exec_file}`
+  #{llio_file_transfer} #{input_file}
+  #{llio_dir_transfer} #{dirname(input_file)}/
   cd #{dirname(input_file)}/
   mpiexec #{exec_file} ./#{basename(input_file)}
 

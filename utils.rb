@@ -67,12 +67,12 @@ def rsc_group(enable_threads)
     label: Resource group
     value: small
     options:
-      - [ small, small ]
+      - [ small, small, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
 YAML
   if !enable_threads
-    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Max run hours (0 - 24), set-max-time_1: 24]' + "\n"
+    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
   else
-    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Max run hours (0 - 24), set-max-time_1: 24]' + "\n"
+    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
   end
 end
 
@@ -133,7 +133,7 @@ def fugaku_common(rsc_group, enable_threads = true)
   form << <<-YAML
   time:
     widget:   number
-    label:    [ Max run hours (0 - 72), Max run minutes (0 - 59) ]
+    label:    [ Maximum hours (0 - 72), Maximum minutes (0 - 59) ]
     size:     2
     value:    [  1,  0 ]
     min:      [  0,  0 ]
@@ -350,4 +350,40 @@ end
 
 def input_file(required)
   path("input_file", "Input file", required)
+end
+
+def llio(target)
+  form = <<-YAML
+  llio:
+    label: LLIO Transfer
+    widget: radio
+    direction: horizontal
+    value: "(None)"
+    help: Enable this setting when using more than 7,000 nodes or 28,000 processes. To reduce IO load, the targets are transferred to the cache area. \
+          <a href=\"https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/LayeredStorageAndLLIO/index.html\">More info</a>.
+    options:
+      - ["(None)", "", disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
+YAML
+  if target == "file"
+    form << "      - [\"Only input file\", \"\", hide-llio_exec_file_transfer, hide-llio_file_transfer, disable-llio_dir_transfer ]\n"
+    form << "      - [\"Directory where input file exists\", \"\", hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer ]\n"
+  elsif target == "directory"
+    form << "      - [\"Working directory\", \"\", hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer]\n"
+  end
+  
+  form += <<-YAML
+  llio_exec_file_transfer:
+    widget: text
+    value: "/usr/bin/llio_transfer"
+
+  llio_file_transfer:
+    widget: text
+    value: "/usr/bin/llio_transfer"
+
+  llio_dir_transfer:
+    widget: text
+    value: "/home/system/tool/dir_transfer"
+YAML
+
+  return form
 end
