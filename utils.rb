@@ -355,7 +355,7 @@ end
 def llio(target)
   form = <<-YAML
   llio:
-    label: LLIO Transfer
+    label: LLIO target
     widget: radio
     direction: horizontal
     value: "(None)"
