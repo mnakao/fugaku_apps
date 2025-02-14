@@ -358,7 +358,7 @@ def llio(target)
     label: LLIO target
     widget: radio
     direction: horizontal
-    value: "(None)"
+    value: "Only input file"
     help: Enable this setting when using more than 7,000 nodes or 28,000 processes. To reduce IO load, the targets are transferred to the cache area. \
           <a href=\"https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/LayeredStorageAndLLIO/index.html\">More info</a>.
     options:
@@ -374,15 +374,15 @@ YAML
   form += <<-YAML
   llio_comment:
     widget: text
-    value: "# LLIO transfer"
+    value: '\\n# LLIO transfer'
 
   llio_exec_file_transfer:
     widget: text
-    value: "/usr/bin/llio_transfer"
+    value:  "/usr/bin/llio_transfer"
 
   llio_file_transfer:
     widget: text
-    value: "/usr/bin/llio_transfer"
+    text: "/usr/bin/llio_transfer"
 
   llio_dir_transfer:
     widget: text
