@@ -384,7 +384,7 @@ def llio(target)
       - ["(None)", "", disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
 YAML
   if target == "file"
-    form << "      - [\"Only input file\", \"\", hide-llio_comment, hide-llio_exec_file_transfer, hide-llio_file_transfer, disable-llio_dir_transfer ]\n"
+    form << "      - [\"Input file\", \"\", hide-llio_comment, hide-llio_exec_file_transfer, hide-llio_file_transfer, disable-llio_dir_transfer ]\n"
     form << "      - [\"Directory where input file exists\", \"\", hide-llio_comment, hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer ]\n"
   elsif target == "directory"
     form << "      - [\"Working directory\", \"\", hide-llio_comment, hide-llio_exec_file_transfer, disable-llio_file_transfer, hide-llio_dir_transfer]\n"
