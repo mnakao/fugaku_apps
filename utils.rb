@@ -77,6 +77,7 @@ def rsc_group(enable_threads)
     widget: select
     direction: horizontal
     label: Resource group
+    required: true
     value: small
     help: See <a href="https://www.fugaku.r-ccs.riken.jp/en/resource_group_config">Resource group configuration</a> for details.
     options:
