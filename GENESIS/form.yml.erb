@@ -38,10 +38,10 @@ script: |
   #{llio_comment}
   #{llio_exec_file_transfer} `which #{exec_file}`
   #{llio_file_transfer} #{input_file}
-  #{llio_dir_transfer} #{dirname(input_file)}/
+  #{llio_dir_transfer} #{dirname(input_file)}
   
   # Execute GENESIS
-  cd #{dirname(input_file)}/
+  cd #{dirname(input_file)}
   mpiexec #{exec_file} ./#{basename(input_file)}
 
 check: |

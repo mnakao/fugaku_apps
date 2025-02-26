@@ -36,9 +36,9 @@ script: |
   #{llio_comment}
   #{llio_exec_file_transfer} `which ffv-hc-ace-NS`
   #{llio_file_transfer} #{input_file}
-  #{llio_dir_transfer} #{dirname(input_file)}/
+  #{llio_dir_transfer} #{dirname(input_file)}
   
-  cd #{dirname(input_file)}/
+  cd #{dirname(input_file)}
   mpiexec ffv-hc-ace-NS ./#{basename(input_file)}
 
 submit: |
