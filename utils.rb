@@ -33,7 +33,7 @@ def default_dir()
   Dir.home
 end
 
-def header(hide_script_content)
+def header(hide_script_content = true)
   yaml = <<-YAML
   _script_location:
     widget:     path
@@ -53,7 +53,6 @@ YAML
 
   unless hide_script_content
     yaml << <<-YAML
-
   script_content:
     widget: checkbox
     value: ["Hide script content"]
