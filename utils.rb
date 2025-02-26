@@ -74,17 +74,24 @@ end
 def rsc_group(enable_threads)
   yaml = <<-YAML
   rsc_group:
-    widget: radio
+    widget: select
     direction: horizontal
     label: Resource group
     value: small
+    help: See <a href="https://www.fugaku.r-ccs.riken.jp/en/resource_group_config">Resource group configuration</a> for details.
     options:
-      - [ small, small, disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
+      - [ small     , small,      disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
+      - [ spot-small, spot-small, disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer, set-label-time_1: Maximum hours (0 - 4), set-max-time_1: 4 ]
 YAML
+  
   if !enable_threads
-    yaml << '      - [ large, large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
+    yaml << '      - [ large,      large,      set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
+    yaml << '      - [ spot-large, spot-large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 4),  set-max-time_1: 4,  enable-llio ]' + "\n"
+    yaml << '      - [ f-pt,       f-pt,       set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
   else
-    yaml << '      - [ large, large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
+    yaml << '      - [ large,      large,      set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
+    yaml << '      - [ spot-large, spot-large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 4),  set-max-time_1:  4, enable-llio ]' + "\n"
+    yaml << '      - [ f-pt,       f-pt,       set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
   end
 end
 
@@ -255,7 +262,7 @@ YAML
   check = <<-YAML
   if @time_1.to_i == 0 && @time_2.to_i == 0
     halt 500, "Time is too short."
-  elsif ((@rsc_group == "small" && @time_1.to_i == 72) || (@rsc_group == "large" && @time_1.to_i == 24)) && @time_2.to_i > 0
+  elsif ((@rsc_group == "small" && @time_1.to_i == 72) || (@rsc_group == "large" && @time_1.to_i == 24) || ((@rsc_group == "spot-small" || @rsc_group == "spot-large") && @time_1.to_i == 4)) && @time_2.to_i > 0
     halt 500, "Exceeded Time (#{@time_1}:#{@time_2}:00)."
   end
   
