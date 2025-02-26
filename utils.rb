@@ -263,7 +263,7 @@ YAML
   if @time_1.to_i == 0 && @time_2.to_i == 0
     halt 500, "Time is too short."
   elsif ((@rsc_group == "small" && @time_1.to_i == 72) || (@rsc_group == "large" && @time_1.to_i == 24) || ((@rsc_group == "spot-small" || @rsc_group == "spot-large") && @time_1.to_i == 4)) && @time_2.to_i > 0
-    halt 500, "Exceeded Time (#{@time_1}:#{@time_2}:00)."
+    halt 500, "Exceeded Time (\#{@time_1}:\#{@time_2}:00)."
   end
   
   nodes   = @nodes_procs_threads_1.to_i
