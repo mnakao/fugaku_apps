@@ -402,7 +402,7 @@ YAML
 
   llio_file_transfer:
     widget: text
-    text: "/usr/bin/llio_transfer"
+    value:  "/usr/bin/llio_transfer"
 
   llio_dir_transfer:
     widget: text
