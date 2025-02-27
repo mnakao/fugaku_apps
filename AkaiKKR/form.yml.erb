@@ -1,7 +1,9 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check, submit = fugaku_common("single_procs")
+  enable_threads = false
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("single", enable_threads, check_script_content)
   
   # spack versions akaikkr -s
   versions = ["2021v001", "2002v010"]
@@ -21,7 +23,7 @@ script: |
   spack load akaikkr@#{akaikkr}
   
   cd #{dirname(input_file)}
-  specx < #{input_file} > output.txt
+  specx < ./#{basename(input_file)} > output.txt
 
 submit: |
 <%= submit %>

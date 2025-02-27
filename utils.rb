@@ -33,7 +33,7 @@ def default_dir()
   Dir.home
 end
 
-def header(hide_script_content = true)
+def header(check_script_content = false)
   yaml = <<-YAML
   _script_location:
     widget:     path
@@ -51,7 +51,7 @@ def header(hide_script_content = true)
     required: [true, false]
 YAML
 
-  unless hide_script_content
+  if check_script_content
     yaml << <<-YAML
   script_content:
     widget: checkbox
@@ -139,14 +139,14 @@ def nodes_procs_threads()
 YAML
 end
 
-def fugaku_common(rsc_group, enable_threads = true, hide_script_content = true)
+def fugaku_common(rsc_group, enable_threads = true, check_script_content = false)
   form = rsc_group == "small_and_large" ? rsc_group(enable_threads) : ""
 
-  if rsc_group == "single_procs" && enable_threads
+  if rsc_group == "single" && enable_threads
     form << threads()
-  elsif rsc_group != "single_procs" && !enable_threads
+  elsif rsc_group != "single" && !enable_threads
     form << nodes_procs()
-  elsif rsc_group != "single_procs" && enable_threads
+  elsif rsc_group != "single" && enable_threads
     form << nodes_procs_threads()
   end
 
@@ -277,7 +277,7 @@ YAML
   end
 YAML
 
-  return form.chomp, header(hide_script_content).chomp, script.chomp, check.chomp, submit.chomp
+  return form.chomp, header(check_script_content).chomp, script.chomp, check.chomp, submit.chomp
 end
 
 def text(key, label, required = false)

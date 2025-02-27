@@ -1,7 +1,9 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small_and_large", true, false)
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small_and_large", enable_threads, check_script_content)
   
   # spack versions ffvhc-ace -s
   versions = ["0.1"] # Since there is only one version, we do not create options in the form.
