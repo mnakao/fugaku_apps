@@ -2,7 +2,7 @@ EXCLUDED_GROUPS = ["f-op", "fugaku", "oss-adm"] # "Group names starting with "is
 
 def favorites()
   groups = `groups`.split
-  favorites = []
+  favorites = ["      - #{Dir.home}\n"]
 
   unless groups.empty?
     groups.each do |g|
@@ -71,7 +71,7 @@ def submit()
 BASH
 end
 
-def rsc_group(enable_threads)
+def form_rsc_group(rsc_group, enable_threads)
   yaml = <<-YAML
   rsc_group:
     widget: select
@@ -79,21 +79,28 @@ def rsc_group(enable_threads)
     label: Resource group
     required: true
     value: small
-    help: See <a href="https://www.fugaku.r-ccs.riken.jp/en/resource_group_config">Resource group configuration</a> for details.
+    help: See <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/en/resource_group_config">Resource group configuration</a> for details.
     options:
-      - [ small     , small,      disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]
-      - [ spot-small, spot-small, disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer, set-label-time_1: Maximum hours (0 - 4), set-max-time_1: 4 ]
 YAML
-  
-  if !enable_threads
-    yaml << '      - [ large,      large,      set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
-    yaml << '      - [ spot-large, spot-large, set-label-nodes_procs_1: "Nodes (385 - 12,288)", set-min-nodes_procs_1: 385, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2: 385, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 4),  set-max-time_1: 4,  enable-llio ]' + "\n"
-    yaml << '      - [ f-pt,       f-pt,       set-label-nodes_procs_1: "Nodes (1 - 12,288)",   set-min-nodes_procs_1:   1, set-max-nodes_procs_1: 12288, set-min-nodes_procs_2:   1, set-max-nodes_procs_2: 589824, set-label-nodes_procs_2: "Procs (1 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
-  else
-    yaml << '      - [ large,      large,      set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
-    yaml << '      - [ spot-large, spot-large, set-label-nodes_procs_threads_1: "Nodes (385 - 12,288)", set-min-nodes_procs_threads_1: 385, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2: 385, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (385 - 589,824)", set-label-time_1: Maximum hours (0 - 4),  set-max-time_1:  4, enable-llio ]' + "\n"
-    yaml << '      - [ f-pt,       f-pt,       set-label-nodes_procs_threads_1: "Nodes (1 - 12,288)",   set-min-nodes_procs_threads_1:   1, set-max-nodes_procs_threads_1: 12288, set-min-nodes_procs_threads_2:   1, set-max-nodes_procs_threads_2: 589824, set-label-nodes_procs_threads_2: "Procs (1 - 589,824)", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]' + "\n"
+
+  prefix = enable_threads ? "nodes_procs_threads" : "nodes_procs"
+  if rsc_group == "small_and_large"
+    yaml << "      - [ small     , small,      disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]\n"
+    yaml << "      - [ spot-small, spot-small, disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer, set-label-time_1: Maximum hours (0 - 4), set-max-time_1: 4 ]\n"
+    yaml << "      - [ large,      large,      set-label-#{prefix}_1: \"Nodes (385 - 12,288)\", set-min-#{prefix}_1: 385, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2: 385, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (385 - 589,824)\", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]\n"
+    yaml << "      - [ spot-large, spot-large, set-label-#{prefix}_1: \"Nodes (385 - 12,288)\", set-min-#{prefix}_1: 385, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2: 385, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (385 - 589,824)\", set-label-time_1: Maximum hours (0 - 4),  set-max-time_1: 4,  enable-llio ]\n"
+    yaml << "      - [ f-pt,       f-pt,       set-label-#{prefix}_1: \"Nodes (1 - 12,288)\",   set-min-#{prefix}_1:   1, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2:   1, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (1 - 589,824)\",   set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]\n"
+  elsif rsc_group == "small"
+    yaml << "      - [ small,      small ]\n"
+    yaml << "      - [ spot-small, spot-small, set-label-time_1: Maximum hours (0 - 4), set-max-time_1: 4 ]\n"
+    yaml << "      - [ f-pt,       f-pt,       set-label-#{prefix}_1: \"Nodes (1 - 12,288)\", set-min-#{prefix}_1: 1, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2: 1, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (1 - 589,824)\", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24 ]\n"
+  elsif rsc_group == "single"
+    yaml << "      - [ small     , small ]\n"
+    yaml << "      - [ spot-small, spot-small, set-label-time_1: Maximum hours (0 - 4),  set-max-time_1:  4 ]\n"
+    yaml << "      - [ f-pt,       f-pt,       set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24 ]\n"
   end
+
+  return yaml
 end
 
 def threads()
@@ -140,7 +147,7 @@ YAML
 end
 
 def fugaku_common(rsc_group, enable_threads = true, check_script_content = false)
-  form = rsc_group == "small_and_large" ? rsc_group(enable_threads) : ""
+  form = form_rsc_group(rsc_group, enable_threads)
 
   if rsc_group == "single" && enable_threads
     form << threads()
@@ -229,19 +236,18 @@ YAML
 YAML
 
   script = "  #!/bin/bash\n"
-  if rsc_group == "small_and_large"
-    script << "  #PJM -L \"rscgrp=\#{rsc_group}\"\n"
-  elsif rsc_group == "small"
-    script << "  #PJM -L \"rscgrp=small\"\n"
-  end
+  script << "  #PJM -L \"rscgrp=\#{rsc_group}\"\n"
 
-  if rsc_group == "single_procs" && enable_threads
-  elsif rsc_group != "single_procs" && !enable_threads
-    script << "  #PJM -L \"node=\#{nodes_procs_1}\"\n"
-    script << "  #PJM --mpi \"proc=\#{nodes_procs_2}\"\n"
-  elsif rsc_group != "single_procs" && enable_threads
-    script << "  #PJM -L \"node=\#{nodes_procs_threads_1}\"\n"
-    script << "  #PJM --mpi \"proc=\#{nodes_procs_threads_2}\"\n"
+  if rsc_group == "single"
+    script << "  #PJM -L \"node=1\"\n" # If this is not specified, 12 nodes will be reserved.
+  else
+    if enable_threads
+      script << "  #PJM -L \"node=\#{nodes_procs_threads_1}\"\n"
+      script << "  #PJM --mpi \"proc=\#{nodes_procs_threads_2}\"\n"
+    else
+      script << "  #PJM -L \"node=\#{nodes_procs_1}\"\n"
+      script << "  #PJM --mpi \"proc=\#{nodes_procs_2}\"\n"
+    end
   end
   
   script << <<-YAML
@@ -254,16 +260,16 @@ YAML
   #PJM --spath \#{stat_file_name}
 YAML
 
-  if rsc_group == "single_procs" && enable_threads
+  if rsc_group == "single" && enable_threads
     script << "  export OMP_NUM_THREADS=\#{threads}\n"
-  elsif rsc_group != "single_procs" && enable_threads
+  elsif rsc_group != "single" && enable_threads
     script << "  export OMP_NUM_THREADS=\#{nodes_procs_threads_3}\n"
   end
 
   check = <<-YAML
   if @time_1.to_i == 0 && @time_2.to_i == 0
     halt 500, "Time is too short."
-  elsif ((@rsc_group == "small" && @time_1.to_i == 72) || (@rsc_group == "large" && @time_1.to_i == 24) || ((@rsc_group == "spot-small" || @rsc_group == "spot-large") && @time_1.to_i == 4)) && @time_2.to_i > 0
+  elsif ((@rsc_group == "small" && @time_1.to_i == 72) || ((@rsc_group == "large" || @rsc_group == "f-pt") && @time_1.to_i == 24) || ((@rsc_group == "spot-small" || @rsc_group == "spot-large") && @time_1.to_i == 4)) && @time_2.to_i > 0
     halt 500, "Exceeded Time (\#{@time_1}:\#{@time_2}:00)."
   end
   
@@ -278,17 +284,6 @@ YAML
 YAML
 
   return form.chomp, header(check_script_content).chomp, script.chomp, check.chomp, submit.chomp
-end
-
-def text(key, label, required = false)
-  form = <<-YAML
-  #{key}:
-    widget: text
-    label: #{label}
-YAML
-  form << "    required: #{required}" if required
-
-  return form
 end
 
 def output_options(options, value)
@@ -306,46 +301,87 @@ def output_options(options, value)
     end
     form << (value == nil ? "    value: \"#{options[0]}\"" : "    value: \"#{value}\"")
   end
-end
-
-def select(key, label, options, value = nil, help = nil)
-  form = <<-YAML
-  #{key}:
-    widget: select
-    required: true
-    label: #{label}
-    options:
-#{output_options(options, value)}
-YAML
-  form << "    help: #{help}\n" if help != nil
 
   return form
 end
 
-def radio(key, label, options, value = nil, help = nil)
+def text(key, label, value = nil, help = nil, required = true, indent = nil)
+  form = <<-YAML
+  #{key}:
+    widget: text
+    required: #{required ? "true" : "false"}
+YAML
+  form << "    label:  #{label}\n"  if label
+  form << "    value:  #{value}\n"  if value
+  form << "    help:   #{help}\n"   if help
+  form << "    indent: #{indent}\n" if indent
+
+  return form
+end
+
+def select(key, label, options, value = nil, help = nil, required = true, indent = nil)
+  form = <<-YAML
+  #{key}:
+    widget: select
+    required: #{required ? "true" : "false"}
+    options:
+#{output_options(options, value)}
+YAML
+  form << "    label:  #{label}\n"  if label
+  form << "    value:  #{value}\n"  if value
+  form << "    help:   #{help}\n"   if help
+  form << "    indent: #{indent}\n" if indent
+
+  return form
+end
+
+def radio(key, label, options, value = nil, help = nil, required = true, indent = nil)
   form = <<-YAML
   #{key}:
     widget: radio
     direction: horizontal
-    required: true
-    label: #{label}
+    required: #{required ? "true" : "false"}
     options:
 #{output_options(options, value)}
 YAML
-  form << "    help: #{help}" if help != nil
+  form << "    label:  #{label}\n"  if label
+  form << "    value:  #{value}\n"  if value
+  form << "    help:   #{help}\n"   if help
+  form << "    indent: #{indent}\n" if indent
 
   return form
 end
 
-def path(key, label, required)
-  <<-YAML
+def checkbox(key, label, options, value = nil, help = nil, required = true, indent = nil)
+  form = <<-YAML
+  #{key}:
+    widget: checkbox
+    direction: horizontal
+    required: #{required ? "true" : "false"}
+    options:
+#{output_options(options, value)}
+YAML
+  form << "    label:  #{label}\n"  if label
+  form << "    value:  #{value}\n"  if value
+  form << "    help:   #{help}\n"   if help
+  form << "    indent: #{indent}\n" if indent
+
+  return form
+end
+
+def path(key, label, help = nil, required = true, indent = nil)
+  form = <<-YAML
   #{key}:
     widget: path
-    label: #{label}
-    value: ""
-    required: #{required}
+    value: #{default_dir()}
+    required: #{required ? "true" : "false"}
     #{favorites()}
 YAML
+  form << "    label:  #{label}\n"  if label
+  form << "    help:   #{help}\n"   if help
+  form << "    indent: #{indent}\n" if indent
+
+  return form
 end
 
 def working_dir(required)
@@ -353,7 +389,7 @@ def working_dir(required)
   working_dir:
     widget: path
     label: Working directory
-    value: ""
+    value: #{default_dir()}
     show_files: false
     required: #{required}
     #{favorites()}
@@ -369,7 +405,7 @@ def exec_file(binaries, value = nil, widget = "select")
 end
 
 def input_file(required)
-  path("input_file", "Input file", required)
+  path("input_file", "Input file", nil, required)
 end
 
 def llio(target)

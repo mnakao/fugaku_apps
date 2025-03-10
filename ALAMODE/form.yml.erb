@@ -1,28 +1,39 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check, submit = fugaku_common("small")
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
 
-  # spack versions alamode -s
-  versions = ["1.4.2", "1.3.0"]
+  # spack find alamode
+  versions = ["1.5.0", "1.4.2", "1.3.0"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("alamode", "ALAMODE version", versions) %>
-<%= path("input_file", "Input file (mpiexec anphon [input file])", true) %>
+<%= select("alamode", "ALAMODE version", versions) %>
+<%= radio("alm", "Preprocessing", [["Perform", "alm"], ["Skip", "", "disable-alm_input_file", "disable-alm_output_file"]], "Perform", nil) %>
+<%= path("alm_input_file",  "Input file for preprocessing", nil, true, 1) %>
+<%= text("alm_output_file", "Output file for preprocessing", "si_alm.log", nil, true, 1) %>
+<%= path("input_file", "Input file") %>
 
 header:
 <%= header %>
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load alamode@#{alamode}
-  
+
+  # Execute ALAMODE
   cd #{dirname(input_file)}
-  mpiexec anphon #{input_file}
+  #{alm} #{alm_input_file} > #{alm_output_file}
+  mpiexec anphon ./#{basename(input_file)}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

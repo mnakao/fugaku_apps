@@ -4,7 +4,7 @@
   form, header, script, check, submit = fugaku_common("small_and_large")
 
   # spack versions mvmc -s
-  versions = ["1.2.0"] #Since there is only one version, we do not create options in the form.
+  versions = ["1.2.0"] # Since there is only one version, we do not create options in the form.
 %>
 ---
 form:
@@ -16,25 +16,30 @@ form:
     value: "vmc.out"
     options:
       - ["vmc.out", "vmc.out", disable-uhf_input_file ]
-      - ["UHF",     "UHF",     disable-vmc_input_file, disable-se_mode, disable-nodes_procs_threads, set-value-rsc_group: small]
+      - ["UHF",     "UHF",     disable-vmc_input_file, disable-se_mode, disable-nodes_procs_threads, disable-rsc_group-large, disable-rsc_group-spot-large]
       
 <%= radio("se_mode", "Mode",  [["--standard", "-s"], ["--expert", "-e"]]) %>
-<%= path("vmc_input_file", "Input file for vmc.out", true) %>
-<%= path("uhf_input_file", "Input file for UHF"    , true) %>
+<%= path("vmc_input_file", "Input file for vmc.out") %>
+<%= path("uhf_input_file", "Input file for UHF") %>
 
 header:
 <%= header %>
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load mvmc
 
+  # Execute mVMC
   cd #{dirname(vmc_input_file)}
   cd #{dirname(uhf_input_file)}
-  mpiexec #{executable} #{se_mode} #{basename(vmc_input_file)}
-  #{executable} #{basename(uhf_input_file)} &> output.${PJM_JOBID}
+  mpiexec ./#{executable} #{se_mode} #{basename(vmc_input_file)}
+  #{executable} ./#{basename(uhf_input_file)} &> output.${PJM_JOBID}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

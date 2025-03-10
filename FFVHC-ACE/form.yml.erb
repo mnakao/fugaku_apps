@@ -5,7 +5,7 @@
   check_script_content = true
   form, header, script, check, submit = fugaku_common("small_and_large", enable_threads, check_script_content)
   
-  # spack versions ffvhc-ace -s
+  # spack find ffvhc-ace
   versions = ["0.1"] # Since there is only one version, we do not create options in the form.
 %>
 ---
@@ -32,16 +32,21 @@ script: |
   export PARALLEL=$OMP_NUM_THREADS
   #{omp_stacksize}
   #{tofu_eager_limit}
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load ffvhc-ace
   #{llio_comment}
   #{llio_exec_file_transfer} `which ffv-hc-ace-NS`
   #{llio_file_transfer} #{input_file}
   #{llio_dir_transfer} #{dirname(input_file)}
-  
+
+  # Execute FFVHC-ACE
   cd #{dirname(input_file)}
   mpiexec ffv-hc-ace-NS ./#{basename(input_file)}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>
