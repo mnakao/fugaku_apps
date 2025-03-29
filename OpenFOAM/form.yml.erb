@@ -1,7 +1,9 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check, submit = fugaku_common("small_and_large", false)
+  enable_threads = false
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
 
   # spack versions openfoam-org -s
   foundation_versions = ["11", "10", "9"]
@@ -12,29 +14,35 @@
 ---
 form:
 <%= form %>
-  select_openform:
+  select_openfoam:
     widget: radio
-    label: Select OpenForm
+    label: OpenFOAM
     direction: horizontal
     value: Foundation
+    required: true
     options:
-      - ["Foundation", "", disable-foundation_version ]
-      - ["OpenCFD",    "", disable-opencfd_version ]
+      - ["Foundation", "", enable-foundation_version ]
+      - ["OpenCFD",    "", enable-opencfd_version ]
 <%= radio("foundation_version", "Foundation version", foundation_versions) %>
 <%= radio("opencfd_version", "OpenCFD version", opencfd_versions) %>
-<%= working_dir(true) %>
 
 header:
 <%= header %>
 
 script: |
-<%= script %>  
+<%= script %>
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load openfoam-org@#{foundation_version} arch=linux-rhel8-a64fx
   spack load openfoam@#{opencfd_version} arch=linux-rhel8-a64fx
-  
-  cd #{working_dir}
-  // Please write the commands below.
+
+  # Execute OpenFOAM
+  cd #{_SCRIPT_LOCATION}
+  # Please write the commands below
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

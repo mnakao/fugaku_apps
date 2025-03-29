@@ -5,6 +5,6 @@ icon: icon.png
 description: |
   <a target="_blank" class="link-warning" href="https://www.r-ccs.riken.jp/labs/cbrt/">GENESIS (GENeralized-Ensemble SImulation System)</a> is a program package for molecular dynamics simulation and modeling of various biomolecular systems.
 related_app:
-  - PyMOL: PyMOL.svg
-  - VMD: VMD.png
+  - PyMOL
+  - VMD
 

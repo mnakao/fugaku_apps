@@ -1,42 +1,62 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small_and_large")
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small_and_large", enable_threads, check_script_content)
   
   # spack versions scale -s
-  versions = ["5.5.2", "5.5.1", "5.4.5", "5.3.6", "5.2.6"]
+  # versions = ["5.5.2", "5.5.1", "5.4.5", "5.3.6", "5.2.6"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("scale", "SCALE version", versions) %>
-<%= working_dir(true) %>
-<%= path("rm_pp_file",   "Input file for scale-rm_pp (If blank, scale-rm_pp will not run)", false) %>
-<%= path("rm_init_file", "Input file for scale-rm_init (If blank, scale-rm_init will not run)", false) %>
-<%= path("rm_file",      "Input file for scale-rm (If blank, scale-rm will not run)", false) %>
-<%= path("sno_file",     "Input file for sno (If blank, sno will not run)", false) %>
-<%= path("net2g_file",   "Input file for net2g (If blank, net2g will not run)", false) %>
+<%# radio("scale", "SCALE version", versions) %>
+  executables:
+    widget: checkbox
+    label: Execution
+    required: true
+    direction: horizontal
+    options:
+      - [ scale-rm_pp,   scale-rm_pp,   enable-rm_pp_file   ]
+      - [ scale-rm_init, scale-rm_init, enable-rm_init_file ]
+      - [ scale-rm,      scale-rm,      enable-rm_file      ]
+      - [ sno,           sno,           enable-sno_file     ]
+      - [ net2g,         net2g,         enable-net2g_file   ]
+      
+<%= path("rm_pp_file",   "Input file for scale-rm_pp",   nil, true, 1) %>
+<%= path("rm_init_file", "Input file for scale-rm_init", nil, true, 1) %>
+<%= path("rm_file",      "Input file for scale-rm",      nil, true, 1) %>
+<%= path("sno_file",     "Input file for sno",           nil, true, 1) %>
+<%= path("net2g_file",   "Input file for net2g",         nil, true, 1) %>
+<%= llio("directory") %>
 
 header:
 <%= header %>
 
 script: |
 <%= script %>
-  
   export FORT90L=-Wl,-T
   export PLE_MPI_STD_EMPTYFILE=off
   export OMP_WAIT_POLICY=active
   export FLIB_BARRIER=HARD
-  
-  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load scale@#{scale}
 
-  cd #{working_dir}
+  # Load modules
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load scale@5.5.2
+  #{llio_comment}
+  #{llio_dir_transfer} #{_SCRIPT_LOCATION}
+
+  # Execute SCALE
+  cd #{_SCRIPT_LOCATION}
   mpiexec scale-rm_pp #{rm_pp_file}
   mpiexec scale-rm_init #{rm_init_file}
   mpiexec scale-rm #{rm_file}
   mpiexec sno #{sno_file}
   mpiexec net2g #{net2g_file}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

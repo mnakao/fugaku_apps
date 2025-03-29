@@ -1,40 +1,43 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-   form, header, script, check, submit = fugaku_common("small_and_large")
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small_and_large", enable_threads, check_script_content)
   
   # spack versions abinitmp -s
-  versions = [["2-8", "2-8", "disable-exec_file24", "disable-exec_file122"], ["2-4", "2-4", "disable-exec_file28", "disable-exec_file122"], ["1-22", "1-22", "disable-exec_file28", "disable-exec_file24"]]
+  # versions = [["2-8", "2-8", "disable-exec_file24", "disable-exec_file122"], ["2-4", "2-4", "disable-exec_file28", "disable-exec_file122"], ["1-22", "1-22", "disable-exec_file28", "disable-exec_file24"]]
 
-  # spack find --paths abinitmp@2-8
-  # spack find --paths abinitmp@2-4
-  # spack find --paths abinitmp@1-22
-  binaries28  = ["abinitmp", "abinitmp-fint", "abinitmp_smp", "abinitmp_smp-fint", "mkinp_ver2rev8-hd-2023august.py"]
-  binaries24  = ["abinitmp", "abinitmp-fint", "abinitmp_smp", "abinitmp_smp-fint", "mkinp_openver2rev4.py"]
-  binaries122 = ["abinitmp", "abinitmp-fint", "abinitmp_smp", "abinitmp_smp-fint", "mkinp_openver1rev20.py"]
+  binaries = ["abinitmp", "abinitmp-fint", "abinitmp_smp", "abinitmp_smp-fint"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("abinitmp", "ABINIT-MP version", versions) %>
-<%= select("exec_file28",  "Executable file of ABINIT-MP 2-8",  binaries28,  "abinitmp") %>
-<%= select("exec_file24",  "Executable file of ABINIT-MP 2-4",  binaries24,  "abinitmp") %>
-<%= select("exec_file122", "Executable file of ABINIT-MP 1-22", binaries122, "abinitmp") %>
+<%= select("exec_file",  "Executable file of ABINIT-MP",  binaries,  "abinitmp") %>
+<%# radio("abinitmp", "ABINIT-MP version", versions) %>
 <%= input_file(true) %>
+<%= llio("file") %>
 
 header:
 <%= header %>
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load abinitmp@#{abinitmp}
+  spack load abinitmp@2-8
+  #{llio_comment}
+  #{llio_exec_file_transfer} `which #{exec_file}`
+  #{llio_file_transfer} #{input_file}
+  #{llio_dir_transfer} #{dirname(input_file)}
   
+  # Execute ABINIT-MP
   cd #{dirname(input_file)}
-  mpiexec #{exec_file28} < #{basename(input_file)}
-  mpiexec #{exec_file24} < #{basename(input_file)}
-  mpiexec #{exec_file122} < #{basename(input_file)}
+  mpiexec #{exec_file} < #{basename(input_file)}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

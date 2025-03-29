@@ -1,10 +1,12 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small")
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
   # spack versions quantum-espresso -s
-  versions = ["7.3", "7.2"]
+  # versions = ["7.3", "7.2"]
 
   # spack find --paths quantum-espresso@7.3
   # ls -1 /vol0004/apps/opt/qe-7.3/bin/ | awk '{printf (NR==1?"[\"%s\"":", \"%s\""), $0} END {print "]"}'
@@ -13,7 +15,7 @@
 ---
 form:
 <%= form %>
-<%= radio("quantum_espresso", "Quantum Espresso version", versions) %>
+<%# radio("quantum_espresso", "Version", versions) %>
 <%= exec_file(binaries) %>
 <%= input_file(true) %>
 <%= text("options", "Options (e.g. -nk 2)") %>
@@ -23,12 +25,17 @@ header:
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load quantum-espresso@#{quantum_espresso}
-  
+  spack load quantum-espresso@7.3
+
+  # Execute Quantum Espresso
   cd #{dirname(input_file)}/
   mpiexec #{exec_file} -in ./#{basename(input_file)} #{:options}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

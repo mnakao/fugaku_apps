@@ -5,4 +5,4 @@ category: Computer Aided Engineering
 description: |
   <a target="_blank" class="link-warning" href="https://www.hpci-office.jp/en/for_users/appli_software/appli_ffvhc-ace">FFVHC-ACE</a> is a high-fidelity compressible flow solver.
 related_app:
-  - Gnuplot: gnuplot.png
+  - Gnuplot

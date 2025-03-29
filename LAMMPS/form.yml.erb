@@ -1,15 +1,17 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small")
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
   # spack versions lammps -s
-  versions = ["20230802.3", "20230802.2", "20230802.1"]
+  # versions = ["20230802.3", "20230802.2", "20230802.1"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("lammps", "LAMMPS version", versions) %>
+<%# radio("lammps", "LAMMPS version", versions) %>
 <%= input_file(true) %>
 <%= text("options", "Options (e.g. -pk omp 2)") %>
 
@@ -18,12 +20,17 @@ header:
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load lammps@#{lammps}
-  
+  spack load lammps@20230802.3
+
+  # Execute LAMMPS
   cd #{dirname(input_file)}
   mpiexec lmp -in #{basename(input_file)} #{:options}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

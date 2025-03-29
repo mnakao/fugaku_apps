@@ -1,10 +1,12 @@
 <%
   require './fugaku_apps/utils.rb'
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
-  form, header, script, check, submit = fugaku_common("small")
-  
-  # spack versions openmx -s
-  versions = ["3.9.9"] # Since there is only one version, we do not create options in the form.
+  # spack find openmx
+  #versions = ["3.9.9"] # Since there is only one version, we do not create options in the form.
 
   # spack find --paths openmx@3.9.9
   binaries = ["ADenBand", "analysis_example", "BandDispersion", "bandgnu13", "bin2txt", "calB", "cube2xsf", "DosMain", "esp", "example_mpi_spawn", "FermiLoop", "gcube2oned", "GridCalc", "intensity_map", "jx", "kSpin", "md2axsf", "MulPCalc", "MulPOnly", "openmx", "polB", "tp", "Z2FH"]
@@ -22,11 +24,16 @@ header:
 script: |
 <%= script %>
 
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load openmx@3.9.9
+  spack load openmx
 
+  # Execute OpenMX
   cd #{dirname(input_file)}
   mpiexec #{exec_file} #{basename(:input_file)} #{:options}
-  
+
+check: |
+<%= check %>
+
 submit: |
 <%= submit %>

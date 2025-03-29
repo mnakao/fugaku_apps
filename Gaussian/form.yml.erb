@@ -1,16 +1,18 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check, submit = fugaku_common("single")
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("single", enable_threads, check_script_content)
 
   # module use /vol0004/apps/isv/Gaussian/modulefiles
   # module avail Gaussian
-  versions = ["g16c02", "g16c01"]
+  # versions = ["g16c02", "g16c01"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("gaussian", "Gaussian version", versions) %>
+<%# radio("gaussian", "Gaussian version", versions) %>
 <%= input_file(true) %>
 
 header:
@@ -18,14 +20,18 @@ header:
 
 script: |
 <%= script %>
-  
-  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  module use /vol0004/apps/isv/Gaussian/modulefiles
-  module load Gaussian/#{gaussian}
 
+  # Load modules
+  module use /vol0004/apps/isv/Gaussian/modulefiles
+  module load Gaussian
+
+  # Execute Gaussian
   . $g16root/g16/bsd/g16.profile
   cd #{dirname(input_file)}
   g16 < #{basename(input_file)} >& output.txt
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

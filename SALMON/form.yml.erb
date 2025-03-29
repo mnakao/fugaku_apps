@@ -1,16 +1,19 @@
 <%
   require './fugaku_apps/utils.rb'
 
-  form, header, script, check, submit = fugaku_common("small_and_large")
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small_and_large", enable_threads, check_script_content)
 
   # spack versions salmon-tddft -s
-  versions = ["2.2.0", "2.1.0"]
+  #versions = ["2.2.0", "2.1.0"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("salmon", "SALMON version", versions) %>
+<%# radio("salmon", "SALMON version", versions) %>
 <%= input_file(true) %>
+<%= llio("file") %>
 
 header:
 <%= header %>
@@ -18,11 +21,20 @@ header:
 script: |
 <%= script %>
 
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load salmon-tddft@#{salmon}
+  spack load salmon-tddft@2.2.0
+  #{llio_comment}
+  #{llio_exec_file_transfer} `which salmon`
+  #{llio_file_transfer} #{input_file}
+  #{llio_dir_transfer} #{dirname(input_file)}
 
+  # Execute SALMON
   cd #{dirname(input_file)}
   mpiexec -stdin #{basename(input_file)} salmon
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

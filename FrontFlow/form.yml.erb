@@ -1,13 +1,15 @@
 <%
   require './fugaku_apps/utils.rb'
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
-  form, header, script, check, submit = fugaku_common("small")
+  # spack find ffb
+  # ffb_versions = ["9.0"]
   
-  # spack versions ffb -s
-  ffb_versions = ["9.0", "8.1"]
-  
-  # spack versions ffx -s
-  ffx_versions = ["59.01", "03.01"]
+  # spack find ffx
+  # ffx_versions = ["59.01"]
 %>
 ---
 form:
@@ -15,14 +17,13 @@ form:
   frontflow:
     widget: radio
     direction: horizontal
-    label: Select FrontFrow
+    label: FrontFrow
     value: FrontFrow/blue
+    required: true
     options:
-      - [FrontFrow/blue, les3x.mpi, disable-ffx]
-      - [FrontFrow/X,    lbm3d.mpi, disable-ffb]
-      
-<%= radio("ffb", "FrontFrow/blue version", ffb_versions) %>
-<%= radio("ffx", "FrontFrow/X",            ffx_versions) %>
+      - [FrontFrow/blue, [ffb, les3x.mpi]]
+      - [FrontFrow/X,    [ffx, lbm3d.mpi]]
+
 <%= working_dir(true) %>
 
 header:
@@ -31,13 +32,17 @@ header:
 script: |
 <%= script %>
   export FORT90L="-Wl,-T"
-  
-  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load ffb@#{ffb}
-  spack load ffx@#{ffx}
 
+  # Load modules
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load #{frontflow_1}
+
+  # Execute FrontFlow
   cd #{working_dir}
-  mpiexec #{frontflow}
+  mpiexec #{frontflow_2}
 
 submit: |
 <%= submit %>
+
+check: |
+<%= check %>

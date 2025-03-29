@@ -1,10 +1,12 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small")
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
   # spack versions phase0 -s
-  versions = ["2023.01", "2021.02", "2021.01", "2019.02"]
+  # versions = ["2023.01", "2021.02", "2021.01", "2019.02"]
 %>
 ---
 form:
@@ -28,12 +30,17 @@ header:
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load phase0@2023.01/#{version_2}
-  
+
+  # Execute PHASE/0
   cd #{working_dir}
   mpiexec #{version_1} #{:options}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

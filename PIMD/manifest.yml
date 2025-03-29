@@ -4,4 +4,5 @@ category: Molecular Dynamics
 icon: icon.png
 description: |
   <a target="_blank" class="link-warning" href="https://ccse.jaea.go.jp/software/PIMD/index.jp.html">PIMD</a> is an open-source software for parallel molecular simulations.
-
+related_app:
+  - VMD

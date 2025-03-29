@@ -4,4 +4,5 @@ category: Computer Aided Engineering
 icon: icon.png
 description: |
   <a target="_blank" class="link-warning" href="https://openfoam.org">OpenFOAM (Foundation)</a> and <a target="_blank" class="link-warning" href="https://www.openfoam.com">OpenFOAM (OpenCFD)</a> are computational fluid dynamics software packages.
-
+related_app:
+  - Paraview

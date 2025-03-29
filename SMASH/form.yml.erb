@@ -1,15 +1,17 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small")
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
   # spack versions smash -s
-  versions = ["3.0.2", "3.0.0"]
+  # versions = ["3.0.2", "3.0.0"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("smash", "SMASH version", versions) %>
+<%# radio("smash", "SMASH version", versions) %>
 <%= input_file(true) %>
 
 header:
@@ -17,12 +19,17 @@ header:
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load smash@#{smash}
-  
+  spack load smash@3.0.2
+
+  # Execute SMASH
   cd #{dirname(input_file)}
   mpiexec smash #{basename(input_file)}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

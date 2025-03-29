@@ -1,15 +1,17 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small_and_large")
+
+  enable_threads = true
+  check_script_content = false
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
   # spack versions fds -s
-  versions = ["6.8.0", "6.7.9", "6.7.8", "6.7.7"]
+  # versions = ["6.8.0", "6.7.9", "6.7.8", "6.7.7"]
 %>
 ---
 form:
 <%= form %>
-<%= radio("fds", "FDS version", versions) %>
+<%# radio("fds", "FDS version", versions) %>
 <%= input_file(true) %>
 
 header:
@@ -18,14 +20,16 @@ header:
 script: |
 <%= script %>
 
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load fds@#{fds}
-  
+  spack load fds@6.9.1
+
+  # Execute FDS
   cd #{dirname(input_file)}
   mpiexec fds_mpi_fugaku #{basename(input_file)}
 
 check: |
-  raise "Time" if @time_1 == 24 && @time_2 != 0
+<%= check %>
 
 submit: |
 <%= submit %>

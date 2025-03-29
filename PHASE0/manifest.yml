@@ -4,4 +4,7 @@ category: Condensed Matter Physics
 icon: icon.png
 description: |
   <a target="_blank" class="link-warning" href="https://azuma.nims.go.jp/software/phase">PHASE/0</a> is a first-principles electronic structure calculation program.
+related_app:
+  - Gnuplot
+  - VESTA
 

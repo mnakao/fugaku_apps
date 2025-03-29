@@ -4,3 +4,6 @@ category: Quantum Chemistry
 icon: icon.png
 description: |
   <a target="_blank" class="link-warning" href="https://smash-qc.sourceforge.io">Scalable Molecular Analysis Solver for High-performance computing systems (SMASH)</a> is a parallel software for quantum chemistry calculations.
+related_app:
+  - Gaussview: fa-solid fa-microscope
+  - Paraview

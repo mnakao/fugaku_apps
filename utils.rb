@@ -122,12 +122,12 @@ def nodes_procs()
     widget: number
     size: 2
     value: [   1,     1 ]
-    min:   [   1,   385 ]
+    min:   [   1,     1 ]
     max:   [ 384, 18432 ]
     step:  [   1,     1 ]
     label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)" ]
     required: [ true, true ]
-    help: "\\"Nodes x 48 >= Procs\\" and \\"Nodes >= Procs\\" must hold."
+    help: "\\"Nodes x 48 >= Procs\\" must hold."
 YAML
 end
 
@@ -142,7 +142,7 @@ def nodes_procs_threads()
     step:  [   1,     1,  1 ]
     label: [ "Nodes (1 - 384)", "Procs (1 - 18,432)", "Threads (1 - 48)" ]
     required: [ true, true, true ]
-    help: "\\"Nodes x 48 >= Procs x Threads\\" and \\"Nodes >= Procs\\" must hold."
+    help: "\\"Nodes x 48 >= Procs x Threads\\" must hold."
 YAML
 end
 
@@ -156,7 +156,7 @@ def fugaku_common(rsc_group, enable_threads = true, check_script_content = false
   elsif rsc_group != "single" && enable_threads
     form << nodes_procs_threads()
   end
-
+    
   form << <<-YAML
   time:
     widget:   number
@@ -191,12 +191,12 @@ YAML
     label: Execution mode
     direction: horizontal
     indent: 1
-    value: Normal
+    value: "Boost Eco"
     options:
+      - [Boost Eco, "#PJM -L \\"freq=2200,eco_state=2\\""]
       - [Normal,    "#PJM -L \\"freq=2000,eco_state=0\\""]
-      - [Boost,     "#PJM -L \\"freq=2200,eco_state=0\\""]
       - [Eco,       "#PJM -L \\"freq=2000,eco_state=2\\""]
-      - [Boost-Eco, "#PJM -L \\"freq=2200,eco_state=2\\""]
+      - [Boost,     "#PJM -L \\"freq=2200,eco_state=0\\""]
     help: Please refer to the manual for details in <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/en/user_guides/use_latest/PowerControlFunction/index.html">English</a> or <a target="_blank" href="https://www.fugaku.r-ccs.riken.jp/doc_root/ja/user_guides/use_latest/PowerControlFunction/index.html">Japanese</a>.
 
   mail_option:
@@ -238,9 +238,7 @@ YAML
   script = "  #!/bin/bash\n"
   script << "  #PJM -L \"rscgrp=\#{rsc_group}\"\n"
 
-  if rsc_group == "single"
-    script << "  #PJM -L \"node=1\"\n" # If this is not specified, 12 nodes will be reserved.
-  else
+  if rsc_group != "single"
     if enable_threads
       script << "  #PJM -L \"node=\#{nodes_procs_threads_1}\"\n"
       script << "  #PJM --mpi \"proc=\#{nodes_procs_threads_2}\"\n"
@@ -278,8 +276,6 @@ YAML
   threads = @nodes_procs_threads_3.to_i
   if nodes * 48 < procs * threads
     halt 500, 'The condition "nodes * 48 >= procs * threads" is not met.'
-  elsif nodes > procs
-    halt 500, 'procs is smaller than nodes.'
   end
 YAML
 
@@ -305,7 +301,7 @@ def output_options(options, value)
   return form
 end
 
-def text(key, label, value = nil, help = nil, required = true, indent = nil)
+def text(key, label, value = nil, help = nil, required = false, indent = nil)
   form = <<-YAML
   #{key}:
     widget: text
@@ -373,13 +369,13 @@ def path(key, label, help = nil, required = true, indent = nil)
   form = <<-YAML
   #{key}:
     widget: path
-    value: #{default_dir()}
+    value: #{default_dir()}"
     required: #{required ? "true" : "false"}
     #{favorites()}
 YAML
-  form << "    label:  #{label}\n"  if label
-  form << "    help:   #{help}\n"   if help
-  form << "    indent: #{indent}\n" if indent
+  form << "    label:  #{label}\n"      if label
+  form << "    help:   #{help}\n"       if help
+  form << "    indent: #{indent}\n"     if indent
 
   return form
 end

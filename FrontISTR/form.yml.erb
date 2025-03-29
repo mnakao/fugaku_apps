@@ -1,10 +1,12 @@
 <%
   require './fugaku_apps/utils.rb'
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
   
-  form, header, script, check, submit = fugaku_common("small")
-  
-  # spack versions fugaku-frontistr -s
-  versions = ["master"] # Since there is only one version, we do not create options in the form.
+  # spack find fugaku-frontistr
+  #versions = ["master"] # Since there is only one version, we do not create options in the form.
 
   # spack find --paths fugaku-frontistr@master
   binaries = ["fistr1", "hec2rcap", "hecmw_part1", "hecmw_vis1", "rconv", "rmerge"]
@@ -25,13 +27,18 @@ header:
 
 script: |
 <%= script %>
-  
-  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load fugaku-frontistr@master
 
+  # Load modules  
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load fugaku-frontistr
+
+  # Execute FrontISTR
   cd #{working_dir}
   #{pre_execute}
   mpiexec #{exec_file}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

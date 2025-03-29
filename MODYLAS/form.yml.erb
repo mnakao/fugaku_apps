@@ -1,7 +1,9 @@
 <%
   require './fugaku_apps/utils.rb'
-  
-  form, header, script, check, submit = fugaku_common("small_and_large")
+
+  enable_threads = true
+  check_script_content = true
+  form, header, script, check, submit = fugaku_common("small_and_large", enable_threads, check_script_content)
   
   # spack versions modylas-new -s
   versions = [["1.1.0 (ff=charmm)", "1.1.0/qpbwc72"], ["1.1.0 (ff=gaff)", "1.1.0/inzalz2"], ["1.1.0 (ff=oplsaa)", "1.1.0/zhajus2"]]
@@ -13,21 +15,29 @@
 form:
 <%= form %>
 <%= radio("modylas", "MODYLAS version", versions) %>
-<%= working_dir(true) %>
 <%= exec_file(binaries) %>
-<%= text("session_name", "Session name", true) %>
+<%= text("session_name", "Session name", nil, nil, true) %>
+<%= llio("directory") %>
 
 header:
 <%= header %>
 
 script: |
 <%= script %>
-  
+
+  # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
   spack load modylas-new@#{modylas}
+  #{llio_comment}
+  #{llio_exec_file_transfer} `which #{exec_file}`
+  #{llio_dir_transfer} #{_SCRIPT_LOCATION}
 
-  cd #{working_dir}
-  mpiexec #{:exec_file} #{session_name}
+  # Execute MODYLAS
+  cd #{_SCRIPT_LOCATION}
+  mpiexec #{exec_file} #{:session_name}
+
+check: |
+<%= check %>
 
 submit: |
 <%= submit %>

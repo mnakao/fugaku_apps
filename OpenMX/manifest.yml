@@ -4,4 +4,7 @@ category: Condensed Matter Physics
 icon: icon.png
 description: |
   <a target="_blank" class="link-warning" href="https://www.openmx-square.org">OpenMX</a> is a software for extended structural equation modeling.
-
+related_app:
+  - Gnuplot
+  - OpenMX-viewer
+  - VESTA
