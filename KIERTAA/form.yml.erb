@@ -1,0 +1,167 @@
+---
+form:
+  sample:
+    widget: select
+    label: Sample
+    options:
+      - ["/2ndfs/rccs-aot/a03011/raw/PE001_ct_s", "/2ndfs/rccs-aot/a03011/raw/PE001_ct_s"]
+
+  mode:
+    widget: select
+    label: Mode
+    options:
+      - ["Step",                                   "jasri_iap_s"]
+      - ["Step: Averaged-Direct",                  "jasri_iap_sad"]
+      - ["Step: Multi-Exposure",                   "jasri_iap_sme"]
+      - ["Step: Multi-Exposure & Averaged-Direct", "jasri_iap_smead"]
+      - ["Continuous",                             "jasri_iap_c"]
+      - ["Continuous: Multi-Exposed-Direct",       "jasri_iap_cmd"]
+      
+  show_reconstruction_parameters:
+    widget: checkbox
+    direction: horizontal
+    options:
+      - [ "Reconstruction Parameters", "", enable-center, show-filter, show-zero_padding]
+
+  center:
+    widget: number
+    label: Center (0 - 9,999)
+    value: 0
+    min: 0
+    max: 9999
+    indent: 1
+
+  filter:
+    widget: radio
+    label: Filter
+    direction: horizontal
+    value: Ramp
+    options:
+      - ["Ramp",    "ramp"]
+      - ["Hanning", "hanning"]
+
+  zero_padding:
+    widget: radio
+    label: Zero Padding
+    value: 4
+    direction: horizontal
+    options:
+     - [ 4,  4]
+     - [10, 10]
+
+  show_pre_filter:
+    widget: checkbox
+    direction: horizontal
+    options:
+      - [ "Pre-Filter", "", enable-pre_filter]
+
+  pre_filter:
+    widget: number
+    size: 2
+    label: [Median Filter Kernel Size (2 - 99), Gaussian Filter Kernel Size (2 - 99)]
+    value: [3, 3]
+    min: [2, 2]
+    max: [99, 99]
+    help: [Input number must be odd., Input number must be odd.]
+    indent: 1
+
+  show_intermediate_filter:
+    widget: checkbox
+    direction: horizontal
+    options:
+      - [ "Intermediate-Filter", "", enable-rmr ]
+      
+  rmr:
+    widget: number
+    label: Ring-Artifact Removal Kernel Size (3 - 99)
+    value: 21
+    min: 3
+    max: 99
+    step: 2
+    indent: 1
+    
+  show_post_filter:
+    widget: checkbox
+    direction: horizontal
+    options:
+      - [ "Post-Filter", "", enable-binning, enable-rect ]
+      
+  binning:
+    widget: number
+    label: Binning Size (3 - 99)
+    value: 3
+    min: 2
+    max: 99
+    help: Input number must be odd.
+    indent: 1
+
+  rect:
+    widget: number
+    label: ["Rect Filter (0 - 9,999)", [Origin-x, Origin-y, ROI-x, ROI-y]]
+    size: 4
+    value: [1, 1, 1, 1]
+    min: [0, 0, 0, 0]
+    max: [9999, 9999, 9999, 9999]
+    indent: 1
+
+  job_control_filter:
+    widget: checkbox
+    direction: horizontal
+    options:
+      - [ "Job Control", "", enable-ppn, enable-debug_mode, enable-job_type, enable-output ]
+
+  ppn:
+    widget: select
+    label: Process per node
+    value: 24
+    options:
+      - [ "(None)", "" ]
+      - [ 24, 24 ]
+      - [ 12, 12 ]
+      - [  8,  8 ]
+      - [  6,  6 ]
+      - [  4,  4 ]
+      - [  2,  2 ]
+      - [  1,  1 ]
+    indent: 1
+      
+  debug_mode:
+    widget: radio
+    label: Debug mode
+    value: "No"
+    direction: horizontal
+    options:
+      - [ "No", "no" ]
+      - [ "Yes", "yes" ]
+    indent: 1
+
+  job_type:
+    widget: radio
+    label: Job Type
+    direction: horizontal
+    value: Single
+    options:
+      - [Single, single]
+      - [Bulk,   bulk, disable-output]
+    indent: 1
+
+  output:
+    widget: text
+    label: Output
+    indent: 1
+
+script: |
+  user_id = "<%= username = ENV['USER'] %>"
+  mode = "#{mode}"
+  center = #{center}
+  filter = #{filter}
+  zero_padding = #{zero_padding}
+  median = #{pre_filter_1}
+  gaussian = #{pre_filter_2}
+  rmr = #{rmr}
+  binning = #{binning}
+  rect = (#{rect_1}, #{rect_2}) (#{rect_3}, #{rect_4})
+  ppn = #{ppn}
+  debug_mode = #{debug_mode}
+  job_type = #{job_type}
+  output = "#{output}"
