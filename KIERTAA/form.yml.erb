@@ -165,3 +165,12 @@ script: |
   debug_mode = #{debug_mode}
   job_type = #{job_type}
   output = "#{output}"
+
+submit: |
+  #!/usr/bin/env bash
+
+  cd #{OC_SCRIPT_LOCATION}
+  mv #{OC_SCRIPT_NAME} ct.conf
+  echo "" >> ct.conf
+  PATH=/vol0004/apps/opt/KIERTAA/bin:$PATH genjs_ct ct.conf > #{OC_SCRIPT_NAME}
+
