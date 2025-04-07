@@ -1,5 +1,5 @@
 <%
-  EXCLUDED_GROUPS   = ["f-op", "fugaku", "oss-adm"]
+  EXCLUDED_GROUPS ||= ["f-op", "fugaku", "oss-adm"]
   groups = `groups`.split - EXCLUDED_GROUPS
   groups.delete_if { |i| i.start_with?("isv") }
 
@@ -21,19 +21,19 @@
 ---
 header:
   _script_location:
-    widget:    select
-    label:      Location of ct.conf
+    widget: select
+    label: Location of sample
     required: true
     options:
     <% samples.each do |sample| %>
-      - ["<%= sample %>", "<%= sample %>", set-value-_script_2: "ood_kiertaa_<%= File.basename(sample) %>", hide-_script]
+      - ["<%= sample %>", ["<%= File.basename(sample) %>", "<%= sample.split("/")[2] %>"], set-value-_script_2: "ood_kiertaa_<%= File.basename(sample) %>", hide-_script]
     <% end %>
       
   _script:
     widget:   text
     size :    2
     label:    [Script Name, Job Name]
-    value:    [ct.conf, ""]
+    value:    ["job.sh", ""]
 
   script_content:
     widget: checkbox
@@ -191,7 +191,9 @@ form:
     indent: 1
 
 script: |
-  user_id = "<%= username = ENV['USER'] %>"
+  sample = "#{_script_location_1}"
+  user_id = "<%= ENV['USER'] %>"
+  group_id = "#{_script_location_2}"
   mode = "#{mode}"
   center = #{center}
   filter = #{filter}
