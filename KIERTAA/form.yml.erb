@@ -1,14 +1,51 @@
----
-form:
-  sample:
-    widget: select
-    label: Sample
-    options:
-      - ["/2ndfs/rccs-aot/a03011/raw/PE001_ct_s", "/2ndfs/rccs-aot/a03011/raw/PE001_ct_s"]
+<%
+  EXCLUDED_GROUPS   = ["f-op", "fugaku", "oss-adm"]
+  groups = `groups`.split - EXCLUDED_GROUPS
+  groups.delete_if { |i| i.start_with?("isv") }
 
+  samples = []
+  groups.each do |g|
+    raw_dir = "/2ndfs/" + g + "/" + ENV['USER'] + "/raw/"
+    if Dir.exist?(raw_dir)
+      samples += Dir.entries(raw_dir).select { |entry|
+        path = File.join(raw_dir, entry)
+        File.directory?(path) && !['.', '..'].include?(entry)
+        }.map { |entry|
+          File.join(raw_dir, entry)
+        }
+    end
+  end
+
+  oc_assert(!samples.empty?, "No directory \"/2ndfs/${GROUP}/#{ENV['USER']}/raw/${SAMPLE}\".")
+%>
+---
+header:
+  _script_location:
+    widget:    select
+    label:      Location of ct.conf
+    required: true
+    options:
+    <% samples.each do |sample| %>
+      - ["<%= sample %>", "<%= sample %>", set-value-_script_2: "ood_kiertaa_<%= File.basename(sample) %>", hide-_script]
+    <% end %>
+      
+  _script:
+    widget:   text
+    size :    2
+    label:    [Script Name, Job Name]
+    value:    [ct.conf, ""]
+
+  script_content:
+    widget: checkbox
+    value: "Hide script content"
+    options:
+      - ["Hide script content", "", hide-<%= SCRIPT_CONTENT %>]
+      
+form:
   mode:
     widget: select
     label: Mode
+    required: true
     options:
       - ["Step",                                   "jasri_iap_s"]
       - ["Step: Averaged-Direct",                  "jasri_iap_sad"]
@@ -36,6 +73,7 @@ form:
     label: Filter
     direction: horizontal
     value: Ramp
+    indent: 1
     options:
       - ["Ramp",    "ramp"]
       - ["Hanning", "hanning"]
@@ -45,6 +83,7 @@ form:
     label: Zero Padding
     value: 4
     direction: horizontal
+    indent: 1
     options:
      - [ 4,  4]
      - [10, 10]
@@ -53,7 +92,7 @@ form:
     widget: checkbox
     direction: horizontal
     options:
-      - [ "Pre-Filter", "", enable-pre_filter]
+      - ["Pre-Filter", "", enable-pre_filter]
 
   pre_filter:
     widget: number
@@ -79,6 +118,7 @@ form:
     max: 99
     step: 2
     indent: 1
+    help: Input number must be odd.
     
   show_post_filter:
     widget: checkbox
@@ -88,7 +128,7 @@ form:
       
   binning:
     widget: number
-    label: Binning Size (3 - 99)
+    label: Voxel Binning Size (3 - 99)
     value: 3
     min: 2
     max: 99
@@ -173,4 +213,3 @@ submit: |
   mv #{OC_SCRIPT_NAME} ct.conf
   echo "" >> ct.conf
   PATH=/vol0004/apps/opt/KIERTAA/bin:$PATH genjs_ct ct.conf > #{OC_SCRIPT_NAME}
-
