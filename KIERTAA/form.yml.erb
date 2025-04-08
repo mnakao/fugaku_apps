@@ -35,6 +35,12 @@ header:
     label:    [Script Name, Job Name]
     value:    ["job.sh", ""]
 
+  script_content:
+    widget: checkbox
+    value: "Hide script content"
+    options:
+      - ["Hide script content", "", hide-<%= SCRIPT_CONTENT %>]
+      
 form:
   mode:
     widget: select
