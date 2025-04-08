@@ -19,7 +19,7 @@
   oc_assert(!samples.empty?, "No directory \"/2ndfs/${GROUP}/#{ENV['USER']}/raw/${SAMPLE}\".")
 %>
 ---
-header:
+form:
   _script_location:
     widget: select
     label: Location of sample
@@ -28,20 +28,13 @@ header:
     <% samples.each do |sample| %>
       - ["<%= sample %>", ["<%= File.basename(sample) %>", "<%= sample.split("/")[2] %>"], set-value-_script_2: "ood_kiertaa_<%= File.basename(sample) %>", hide-_script]
     <% end %>
-      
+
   _script:
     widget:   text
     size :    2
     label:    [Script Name, Job Name]
     value:    ["job.sh", ""]
 
-  script_content:
-    widget: checkbox
-    value: "Hide script content"
-    options:
-      - ["Hide script content", "", hide-<%= SCRIPT_CONTENT %>]
-      
-form:
   mode:
     widget: select
     label: Mode
@@ -53,17 +46,25 @@ form:
       - ["Step: Multi-Exposure & Averaged-Direct", "jasri_iap_smead"]
       - ["Continuous",                             "jasri_iap_c"]
       - ["Continuous: Multi-Exposed-Direct",       "jasri_iap_cmd"]
+
+  pix_size:
+    widget: number
+    label: Pixel Size (0.10 - 9.00)
+    required: true
+    value: 1.00
+    min: 0.10
+    max: 9.00
+    step: 0.01
       
   show_reconstruction_parameters:
     widget: checkbox
     direction: horizontal
     options:
-      - [ "Reconstruction Parameters", "", enable-center, show-filter, show-zero_padding]
+      - [ "Reconstruction Parameters", "", show-center, show-filter, show-zero_padding]
 
   center:
     widget: number
     label: Center (0 - 9,999)
-    value: 0
     min: 0
     max: 9999
     indent: 1
@@ -92,15 +93,15 @@ form:
     widget: checkbox
     direction: horizontal
     options:
-      - ["Pre-Filter", "", enable-pre_filter]
+      - ["Pre-Filter", "", show-pre_filter]
 
   pre_filter:
     widget: number
     size: 2
-    label: [Median Filter Kernel Size (2 - 99), Gaussian Filter Kernel Size (2 - 99)]
-    value: [3, 3]
-    min: [2, 2]
+    label: [Median Filter Kernel Size (3 - 99), Gaussian Filter Kernel Size (3 - 99)]
+    min: [3, 3]
     max: [99, 99]
+    step: [2, 2]
     help: [Input number must be odd., Input number must be odd.]
     indent: 1
 
@@ -108,12 +109,11 @@ form:
     widget: checkbox
     direction: horizontal
     options:
-      - [ "Intermediate-Filter", "", enable-rmr ]
+      - [ "Intermediate-Filter", "", show-rmr ]
       
   rmr:
     widget: number
     label: Ring-Artifact Removal Kernel Size (3 - 99)
-    value: 21
     min: 3
     max: 99
     step: 2
@@ -124,14 +124,14 @@ form:
     widget: checkbox
     direction: horizontal
     options:
-      - [ "Post-Filter", "", enable-binning, enable-rect ]
+      - [ "Post-Filter", "", show-binning, show-rect ]
       
   binning:
     widget: number
     label: Voxel Binning Size (3 - 99)
-    value: 3
     min: 2
     max: 99
+    step: 2
     help: Input number must be odd.
     indent: 1
 
@@ -139,7 +139,6 @@ form:
     widget: number
     label: ["Rect Filter (0 - 9,999)", [Origin-x, Origin-y, ROI-x, ROI-y]]
     size: 4
-    value: [1, 1, 1, 1]
     min: [0, 0, 0, 0]
     max: [9999, 9999, 9999, 9999]
     indent: 1
@@ -148,12 +147,11 @@ form:
     widget: checkbox
     direction: horizontal
     options:
-      - [ "Job Control", "", enable-ppn, enable-debug_mode, enable-job_type, enable-output ]
+      - [ "Job Control", "", show-ppn, show-debug_mode, show-job_type, show-output ]
 
   ppn:
     widget: select
     label: Process per node
-    value: 24
     options:
       - [ "(None)", "" ]
       - [ 24, 24 ]
@@ -191,10 +189,11 @@ form:
     indent: 1
 
 script: |
-  sample = "#{_script_location_1}"
   user_id = "<%= ENV['USER'] %>"
   group_id = "#{_script_location_2}"
+  sample = "#{_script_location_1}"
   mode = "#{mode}"
+  pix_size = #{pix_size}
   center = #{center}
   filter = #{filter}
   zero_padding = #{zero_padding}
