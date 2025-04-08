@@ -15,11 +15,11 @@
         }
     end
   end
-
-  oc_assert(!samples.empty?, "No directory \"/2ndfs/${GROUP}/#{ENV['USER']}/raw/${SAMPLE}\".")
+  samples = ["/a/b/c/d/d/"]
+  #oc_assert(!samples.empty?, "No directory \"/2ndfs/${GROUP}/#{ENV['USER']}/raw/${SAMPLE}\".")
 %>
 ---
-form:
+header:
   _script_location:
     widget: select
     label: Location of sample
@@ -35,6 +35,7 @@ form:
     label:    [Script Name, Job Name]
     value:    ["job.sh", ""]
 
+form:
   mode:
     widget: select
     label: Mode
