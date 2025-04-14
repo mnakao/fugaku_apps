@@ -1,35 +1,41 @@
 EXCLUDED_GROUPS = ["f-op", "fugaku", "oss-adm"] # "Group names starting with "isv" are deleted in the code.
 
 def favorites()
+  user = ENV['USER']
   groups = `groups`.split
-  favorites = ["      - #{Dir.home}\n"]
+  favorites = ["      - #{Dir.home}"]
 
-  unless groups.empty?
-    groups.each do |g|
-      next if g.start_with?("isv")
+  groups.each do |group|
+    next if group.start_with?("isv")
 
-      ["/data", "/share", "/2ndfs"].each do |base|
-        dir = File.join(base, g)
-        favorites << "      - \"#{dir}\"\n" if File.directory?(dir)
+    ["/data", "/share", "/2ndfs"].each do |base|
+      dir_user = File.join(base, group, user)
+      dir_group = File.join(base, group)
+
+      if File.directory?(dir_user)
+        favorites << "      - \"#{dir_user}\""
+      elsif File.directory?(dir_group)
+        favorites << "      - \"#{dir_group}\""
       end
     end
   end
 
   return nil if favorites.empty?
 
-  form = "favorites:\n"
-  favorites.each { |fav| form += fav }
-  return form
+  "favorites:\n" + favorites.join("\n") + "\n"
 end
 
 def default_dir()
-  groups = `groups`.split
-  groups.each do |group|
-    next if group.start_with?("isv")    
-    candidate_dir = File.join("/data", group)
-    return candidate_dir if File.directory?(candidate_dir)
+  user = ENV['USER']
+
+  `groups`.split.each do |group|
+    next if group.start_with?("isv")
+
+    [File.join("/data", group, user), File.join("/data", group)].each do |path|
+      return path if File.directory?(path)
+    end
   end
-  
+
   Dir.home
 end
 
@@ -87,9 +93,10 @@ YAML
   if rsc_group == "small_and_large"
     yaml << "      - [ small     , small,      disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer ]\n"
     yaml << "      - [ spot-small, spot-small, disable-llio_comment, disable-llio_exec_file_transfer, disable-llio_file_transfer, disable-llio_dir_transfer, set-label-time_1: Maximum hours (0 - 4), set-max-time_1: 4 ]\n"
-    yaml << "      - [ large,      large,      set-label-#{prefix}_1: \"Nodes (385 - 12,288)\", set-min-#{prefix}_1: 385, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2: 385, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (385 - 589,824)\", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]\n"
-    yaml << "      - [ spot-large, spot-large, set-label-#{prefix}_1: \"Nodes (385 - 12,288)\", set-min-#{prefix}_1: 385, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2: 385, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (385 - 589,824)\", set-label-time_1: Maximum hours (0 - 4),  set-max-time_1: 4,  enable-llio ]\n"
-    yaml << "      - [ f-pt,       f-pt,       set-label-#{prefix}_1: \"Nodes (1 - 12,288)\",   set-min-#{prefix}_1:   1, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2:   1, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (1 - 589,824)\",   set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio ]\n"
+    yaml << "      - [ large,      large,      set-label-#{prefix}_1: \"Nodes (385 - 12,288)\", set-min-#{prefix}_1: 385, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2: 385, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (385 - 589,824)\", set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio, enable-tofu_eager_limit ]\n"
+    yaml << "      - [ spot-large, spot-large, set-label-#{prefix}_1: \"Nodes (385 - 12,288)\", set-min-#{prefix}_1: 385, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2: 385, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (385 - 589,824)\", set-label-time_1: Maximum hours (0 - 4),  set-max-time_1: 4,  enable-llio, enable-tofu_eager_limit ]\n"
+    yaml << "      - [ f-pt,       f-pt,       set-label-#{prefix}_1: \"Nodes (1 - 12,288)\",   set-min-#{prefix}_1:   1, set-max-#{prefix}_1: 12288, set-min-#{prefix}_2:   1, set-max-#{prefix}_2: 589824, set-label-#{prefix}_2: \"Procs (1 - 589,824)\",   set-label-time_1: Maximum hours (0 - 24), set-max-time_1: 24, enable-llio, enable-tofu_eager_limit ]\n"
+    # enable-tofu_eager_limit is defined in FFVHC-ACE
   elsif rsc_group == "small"
     yaml << "      - [ small,      small ]\n"
     yaml << "      - [ spot-small, spot-small, set-label-time_1: Maximum hours (0 - 4), set-max-time_1: 4 ]\n"
@@ -256,6 +263,8 @@ YAML
   #PJM -m \#{mail_option}
   #PJM \#{stat}
   #PJM --spath \#{stat_file_name}
+  #PJM -x PJM_LLIO_GFSCACHE=/vol0004
+  set -e
 YAML
 
   if rsc_group == "single" && enable_threads
@@ -377,11 +386,12 @@ YAML
   return form
 end
 
-def path(key, label, help = nil, required = true, indent = nil)
+def path(key, label, help = nil, required = true, indent = nil, show_files = true)
   form = <<-YAML
   #{key}:
     widget: path
     value: #{default_dir()}"
+    show_files: #{show_files ? "true" : "false"}
     required: #{required ? "true" : "false"}
     #{favorites()}
 YAML

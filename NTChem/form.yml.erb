@@ -4,25 +4,18 @@
   form, header, script, check, submit = fugaku_common("small_and_large")
 
   # spack versions ntchem -s
-  versions = ["24.04", "13.0.0", "12.2.0"]
+  # versions = ["24.04", "13.0.0", "12.2.0"]
   
-  calcs = [["HF/DFT (Hartree-Fock/Density Functional Theory)", "HF/DFT"]]
-  working_dir_types = [["$HOME/$PJM_JOBID",    "${HOME}/${PJM_JOBID}", "disable-working_dir_shared", "disable-working_dir"],
-                       ["$PJM_SHAREDTMP",      "${PJM_SHAREDTMP}",     "disable-working_dir_jobid",  "disable-working_dir", "enable-output_dir"],
-		       ["Specify a directory", "",                     "disable-working_dir_jobid",  "disable-working_dir_shared"]]
+  # calcs = [["HF/DFT (Hartree-Fock/Density Functional Theory)", "HF/DFT"]]
 %>
 ---
 form:
 <%= form %>
-<%= radio("ntchem", "NTChem version", versions) %>
-<%= radio("working_dir_type", "Working directory type", working_dir_types, nil, "Copy the input file to the directory where NTChem will run.") %>
-<%= working_dir(true) %>
-<%= input_file(true) %>
-  output_dir:
-    widget: path
-    label: Output directory
-    help: $PJM_SHAREDTMP/*.MO are copied to the output directory after running NTChem.
+  mol_name:
+    widget: text
+    label: Mol name
     required: true
+    value: test
 
 header:
 <%= header %>
@@ -31,17 +24,28 @@ script: |
 <%= script %>
   export OMP_STACKSIZE=128M
 
-  WORKING_DIR=#{working_dir_type}
-  WORKING_DIR=#{working_dir}
-  mkdir -p ${WORKING_DIR}
-  cp #{input_file} ${WORKING_DIR}/INPUT
-  
-  cd ${WORKING_DIR}
-  for i in basinp mdint1 scf; do
-    mpiexec -std-proc ${WORKING_DIR}/${i}/%%/1000r/${i} ${i}_mpiomp.exe
-  done
+  # Load modules
+  . /vol0004/apps/oss/spack/share/spack/setup-env.sh
+  spack load ntchem
 
-  cp ${WORKING_DIR}/*.MO #{output_dir}
+  # Initialization
+  curdir="#{_SCRIPT_LOCATION}"
+  wrkdir="${curdir}/ntchem"
+  mkdir -p ${wrkdir}
+  cd ${wrkdir}
+  rm -f ./#{mol_name}.* ./INPUT
+
+  # BasInp
+  cp -p ../#{mol_name}.basis.inp ./INPUT
+  mpiexec basinp_mpiomp.exe > ../#{mol_name}.log 2>&1
+
+  # HF guess
+  cp -p ../#{mol_name}.hf.inp ./INPUT
+  mpiexec mdint1_mpiomp.exe >> ../#{mol_name}.log 2>&1
+  mpiexec scf_mpiomp.exe >> ../#{mol_name}.log 2>&1
 
 submit: |
 <%= submit %>
+
+check: |
+<%= check %>

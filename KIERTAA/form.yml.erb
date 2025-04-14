@@ -15,8 +15,8 @@
         }
     end
   end
-  samples = ["/a/b/c/d/d/"]
-  #oc_assert(!samples.empty?, "No directory \"/2ndfs/${GROUP}/#{ENV['USER']}/raw/${SAMPLE}\".")
+
+  oc_assert(!samples.empty?, "No directory \"/2ndfs/${GROUP}/#{ENV['USER']}/raw/${SAMPLE}\".")
 %>
 ---
 header:
@@ -37,9 +37,9 @@ header:
 
   script_content:
     widget: checkbox
-    value: "Hide script content"
+    value: "Hide ct.conf"
     options:
-      - ["Hide script content", "", hide-<%= SCRIPT_CONTENT %>]
+      - ["Hide ct.conf", "", hide-<%= SCRIPT_CONTENT %>]
       
 form:
   mode:
@@ -195,24 +195,26 @@ form:
     label: Output
     indent: 1
 
-script: |
-  user_id = "<%= ENV['USER'] %>"
-  group_id = "#{_script_location_2}"
-  sample = "#{_script_location_1}"
-  mode = "#{mode}"
-  pix_size = #{pix_size}
-  center = #{center}
-  filter = #{filter}
-  zero_padding = #{zero_padding}
-  median = #{pre_filter_1}
-  gaussian = #{pre_filter_2}
-  rmr = #{rmr}
-  binning = #{binning}
-  rect = (#{rect_1}, #{rect_2}) (#{rect_3}, #{rect_4})
-  ppn = #{ppn}
-  debug_mode = #{debug_mode}
-  job_type = #{job_type}
-  output = "#{output}"
+script:
+  label: ct.conf
+  content: |
+    user_id = "<%= ENV['USER'] %>"
+    group_id = "#{_script_location_2}"
+    sample = "#{_script_location_1}"
+    mode = "#{mode}"
+    pix_size = #{pix_size}
+    center = #{center}
+    filter = #{filter}
+    zero_padding = #{zero_padding}
+    median = #{pre_filter_1}
+    gaussian = #{pre_filter_2}
+    rmr = #{rmr}
+    binning = #{binning}
+    rect = (#{rect_1}, #{rect_2}) (#{rect_3}, #{rect_4})
+    ppn = #{ppn}
+    debug_mode = #{debug_mode}
+    job_type = #{job_type}
+    output = "#{output}"
 
 submit: |
   #!/usr/bin/env bash
