@@ -2,16 +2,16 @@
   require './fugaku_apps/utils.rb'
 
   enable_threads = true
-  check_script_content = true
+  check_script_content = false
   form, header, script, check, submit = fugaku_common("small_and_large", enable_threads, check_script_content)
   
-  # spack versions scale -s
-  # versions = ["5.5.2", "5.5.1", "5.4.5", "5.3.6", "5.2.6"]
+  # spack find scale
+  #versions = ["5.5.2", "5.5.1"]
 %>
 ---
 form:
 <%= form %>
-<%# radio("scale", "SCALE version", versions) %>
+<%# radio("scale", "SCALE version", versions, "5.5.2") %>
   executables:
     widget: checkbox
     label: Execution
