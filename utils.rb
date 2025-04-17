@@ -191,7 +191,7 @@ YAML
   show_advanced_option:
     widget: checkbox
     options:
-    - [ 'Show advanced option', '', show-mode, show-stat, show-mail, show-mail_option ]
+    - [ 'Show advanced option', '', show-mode, show-stat, show-mail, show-mail_option, show-gfscache ]
 
   mode:
     widget: radio
@@ -240,6 +240,21 @@ YAML
     widget: text
     label: Statistics file name
     indent: 2
+
+  gfscache:
+    widget: checkbox
+    label: Volume of data area
+    separator: ":"
+    direction: horizontal
+    value: "/vol0004"
+    indent: 1
+    options:
+      - ["/vol0002", "/vol0002"]
+      - ["/vol0003", "/vol0003"]
+      - ["/vol0004", "/vol0004"]
+      - ["/vol0005", "/vol0005"]
+      - ["/vol0006", "/vol0006"]
+    help: "If you use spack, you may need /vol0004."
 YAML
 
   script = "  #!/bin/bash\n"
@@ -263,7 +278,7 @@ YAML
   #PJM -m \#{mail_option}
   #PJM \#{stat}
   #PJM --spath \#{stat_file_name}
-  #PJM -x PJM_LLIO_GFSCACHE=/vol0004
+  #PJM -x PJM_LLIO_GFSCACHE=\#{gfscache}
   set -e
 YAML
 

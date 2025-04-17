@@ -4,4 +4,8 @@ category: Quantum Chemistry
 icon: icon.png
 description: |
   <a target="_blank" class="link-warning" href="https://molsc.riken.jp/en/software.html">NTChem</a> is a high-performance software package for molecular electronic structure calculation.
-
+related_app:
+  - GaussView: fa-solid fa-microscope
+  - MOLDEN
+  - VMD
+  

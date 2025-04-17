@@ -6,3 +6,5 @@ description: |
   <a target="_blank" class="link-warning" href="https://gaussian.com">Gaussian</a> is a general purpose computational chemistry software package.
 related_app:
   - GaussView: fa-solid fa-microscope
+  - MOLDEN
+  
