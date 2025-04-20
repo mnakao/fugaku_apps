@@ -49,7 +49,7 @@ script: |
   # Please write the commands below
 
 check: |
-  if @OC_CLUSTER_NAME == "fugaku"
+  if @OC_CLUSTER_NAME == "Fugaku"
 <%= check %>
   else
     oc_assert(@prepost_time_1.to_i != 0 || @prepost_time_2.to_i != 0, "Time is too short.")
