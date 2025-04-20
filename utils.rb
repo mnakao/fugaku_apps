@@ -341,8 +341,8 @@ YAML
   #PJM \#{stat}
   #PJM --spath \#{stat_file_name}
   #PJM -x PJM_LLIO_GFSCACHE=\#{gfscache}
-  set -e
 YAML
+  script << "  set -e\n" unless app_name == "OpenFOAM"
 
   if rsc_group == "single" && enable_threads
     script << "  export OMP_NUM_THREADS=\#{threads}\n"

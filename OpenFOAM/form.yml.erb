@@ -38,6 +38,7 @@ script: |
   #SBATCH -t #{prepost_time_1}:#{prepost_time_2}:00
   #SBATCH -n #{prepost_cores}
   #SBATCH --mem #{prepost_memory}G
+  set -e
   
   # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
