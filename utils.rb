@@ -66,8 +66,8 @@ YAML
     direction: horizontal
     value: fugaku
     options:
-      - [ fugaku,  "linux-rhel8-a64fx", enable-rsc_group, enable-nodes_procs, enable-time, enable-group, enable-show_advanced_option, enable-mode, enable-mail_option, enable-mail, emable-stat, enable-stat_file_name, enable-gfscache ]
-      - [ prepost, "linux-rhel8-cascadelake", enable-prepost_partiton, enable-prepost_time, enable-prepost_cores, enable-prepost_memory ]
+      - [ Fugaku,  "linux-rhel8-a64fx", enable-rsc_group, enable-nodes_procs, enable-time, enable-group, enable-show_advanced_option, enable-mode, enable-mail_option, enable-mail, emable-stat, enable-stat_file_name, enable-gfscache ]
+      - [ Prepost, "linux-rhel8-cascadelake", enable-prepost_partiton, enable-prepost_time, enable-prepost_cores, enable-prepost_memory ]
 YAML
   elsif appname == "Slurm"
     yaml << <<-YAML
@@ -78,7 +78,7 @@ YAML
     direction: horizontal
     value: fugaku
     options:
-      - [ prepost, prepost, hide-_cluster_name ]
+      - [ Prepost, Prepost, hide-_cluster_name ]
 YAML
   end
       
