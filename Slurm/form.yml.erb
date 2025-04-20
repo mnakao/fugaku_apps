@@ -1,0 +1,59 @@
+<%
+  require './fugaku_apps/utils.rb'
+%>
+---
+header:
+<%= header(false, "Slurm") %>
+
+form:
+  partiton:
+    widget: select
+    label: Partition
+    required: true
+    options:
+      - [ gpu1, gpu1, set-max-prepost_time_1: 3, set-label-prepost_time_1: Maximum hours (0 - 3), set-max-cores:  72, set-label-cores: Number of CPU cores (1 - 72),  set-max-memory:  186, set-label-memory: Memory (5 - 186GB), enable-gpus  ]
+      - [ gpu2, gpu2,                                                                             set-max-cores:  36, set-label-cores: Number of CPU cores (1 - 36),  set-max-memory:   93, set-label-memory: Memory (5 - 93GB),  enable-gpus  ]
+      - [ mem1, mem1, set-max-prepost_time_1: 3, set-label-prepost_time_1: Maximum hours (0 - 3), set-max-cores: 224, set-label-cores: Number of CPU cores (1 - 224), set-max-memory: 5020, set-label-memory: Memory (5 - 5020GB) ]
+      - [ mem2, mem2,                                                                             set-max-cores:  56, set-label-cores: Number of CPU cores (1 - 56),  set-max-memory: 1500, set-label-memory: Memory (5 - 1500GB) ]
+      - [ ondemand-reserved, ondemand-reserved, set-max-prepost_time_1: 720, set-label-prepost_time_1: Maximum hours (0 - 720), set-max-cores: 8, set-label-cores: Number of CPU cores (1 - 8), set-max-memory: 250, set-label-memory: Memory (5 - 250GB)]
+
+  time:
+    widget: number
+    label:    [ Maximum hours (0 - 24), Maximum minutes (0 - 59) ]
+    size:     2
+    max:      [ 24, 59 ]
+    min:      [  0,  0 ]
+    value:    [  1,  0 ]
+    required: [ true, true]
+
+  cores:
+    widget: number
+    label: Number of CPU cores
+    min: 1
+    value: 1
+    required: true
+
+  memory:
+    widget: number
+    label: Memory
+    min: 5
+    value: 5
+    required: true
+
+  gpus:
+    widget: radio
+    label: Number of GPUs
+    direction: horizontal
+    value: 0
+    options:
+      - [0, ""]
+      - [1, 1]
+      - [2, 2]
+  
+script: |
+  #!/bin/bash
+  #SBATCH -p #{partiton}
+  #SBATCH -t #{time_1}:#{time_2}:00
+  #SBATCH -n #{cores}
+  #SBATCH --mem #{memory}G
+  #SBATCH --gpus-per-node=#{gpus}

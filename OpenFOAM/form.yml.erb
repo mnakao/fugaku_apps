@@ -2,18 +2,20 @@
   require './fugaku_apps/utils.rb'
 
   enable_threads = false
-  check_script_content = true
-  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content)
-
+  check_script_content = false
+  form, header, script, check, submit = fugaku_common("small", enable_threads, check_script_content, "OpenFOAM")
+  form_prepost = prepost_common()
+  
   # spack versions openfoam-org -s
-  foundation_versions = ["11", "10", "9"]
+  foundation_versions = ["11", "10"]
 
   # spack versions openfoam -s
-  opencfd_versions = ["2312", "2306", "2212"]
+  opencfd_versions = ["2312", "2306"]
 %>
 ---
 form:
 <%= form %>
+<%= form_prepost %>
   select_openfoam:
     widget: radio
     label: OpenFOAM
@@ -23,26 +25,43 @@ form:
     options:
       - ["Foundation", "", enable-foundation_version ]
       - ["OpenCFD",    "", enable-opencfd_version ]
+      
 <%= radio("foundation_version", "Foundation version", foundation_versions) %>
-<%= radio("opencfd_version", "OpenCFD version", opencfd_versions) %>
+<%= radio("opencfd_version",    "OpenCFD version",    opencfd_versions) %>
 
 header:
 <%= header %>
 
 script: |
 <%= script %>
-
+  #SBATCH -p #{prepost_partiton}
+  #SBATCH -t #{prepost_time_1}:#{prepost_time_2}:00
+  #SBATCH -n #{prepost_cores}
+  #SBATCH --mem #{prepost_memory}G
+  
   # Load modules
   . /vol0004/apps/oss/spack/share/spack/setup-env.sh
-  spack load openfoam-org@#{foundation_version} arch=linux-rhel8-a64fx
-  spack load openfoam@#{opencfd_version} arch=linux-rhel8-a64fx
+  spack load openfoam-org@#{foundation_version} arch=#{_cluster_name}
+  spack load openfoam@#{opencfd_version} arch=#{_cluster_name}
 
   # Execute OpenFOAM
-  cd #{_SCRIPT_LOCATION}
+  cd #{_script_location}
   # Please write the commands below
 
 check: |
+  if @OC_CLUSTER_NAME == "fugaku"
 <%= check %>
+  else
+    oc_assert(@prepost_time_1.to_i != 0 || @prepost_time_2.to_i != 0, "Time is too short.")
+    message = "Exceeded Time (\#{@prepost_time_1}:\#{@prepost_time_2}:00)."
+    oc_assert((@prepost_partiton != "gpu1" || @prepost_time_1.to_i !=  3) || @time_2.to_i <= 0, message)
+    oc_assert((@prepost_partiton != "gpu2" || @prepost_time_1.to_i != 24) || @time_2.to_i <= 0, message)
+    oc_assert((@prepost_partiton != "mem1" || @prepost_time_1.to_i !=  3) || @time_2.to_i <= 0, message)
+    oc_assert((@prepost_partiton != "mem2" || @prepost_time_1.to_i != 24) || @time_2.to_i <= 0, message)
+  end
 
 submit: |
-<%= submit %>
+  #!/bin/bash
+  if [ "#{OC_CLUSTER_NAME}" == "fugaku" ]; then
+    OC_SUBMIT_OPTIONS="--no-check-directory"
+  fi

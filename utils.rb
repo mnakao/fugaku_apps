@@ -39,7 +39,7 @@ def default_dir()
   Dir.home
 end
 
-def header(check_script_content = false)
+def header(check_script_content = false, appname = nil)
   yaml = <<-YAML
   _script_location:
     widget:     path
@@ -57,6 +57,31 @@ def header(check_script_content = false)
     required: [true, false]
 YAML
 
+  if appname == "OpenFOAM"
+    yaml << <<-YAML
+  _cluster_name:
+    widget: select
+    label: Cluster name
+    required: true
+    direction: horizontal
+    value: fugaku
+    options:
+      - [ fugaku,  "linux-rhel8-a64fx", enable-rsc_group, enable-nodes_procs, enable-time, enable-group, enable-show_advanced_option, enable-mode, enable-mail_option, enable-mail, emable-stat, enable-stat_file_name, enable-gfscache ]
+      - [ prepost, "linux-rhel8-cascadelake", enable-prepost_partiton, enable-prepost_time, enable-prepost_cores, enable-prepost_memory ]
+YAML
+  elsif appname == "Slurm"
+    yaml << <<-YAML
+  _cluster_name:
+    widget: select
+    label: Cluster name
+    required: true
+    direction: horizontal
+    value: fugaku
+    options:
+      - [ prepost, prepost, hide-_cluster_name ]
+YAML
+  end
+      
   if check_script_content
     yaml << <<-YAML
   script_content:
@@ -153,7 +178,44 @@ def nodes_procs_threads()
 YAML
 end
 
-def fugaku_common(rsc_group, enable_threads = true, check_script_content = false)
+def prepost_common()
+  form = <<-YAML
+  prepost_partiton:
+    widget: select
+    label: Partition
+    required: true
+    options:
+      - [ gpu1, gpu1, set-max-prepost_time_1: 3, set-label-prepost_time_1: Maximum hours (0 - 3), set-max-prepost_cores:  72, set-label-prepost_cores: Number of CPU cores (1 - 72),  set-max-prepost_memory:  186, set-label-prepost_memory: Memory (5 - 186GB)  ]
+      - [ gpu2, gpu2,                                                                             set-max-prepost_cores:  36, set-label-prepost_cores: Number of CPU cores (1 - 36),  set-max-prepost_memory:   93, set-label-prepost_memory: Memory (5 - 93GB)   ]
+      - [ mem1, mem1, set-max-prepost_time_1: 3, set-label-prepost_time_1: Maximum hours (0 - 3), set-max-prepost_cores: 224, set-label-prepost_cores: Number of CPU cores (1 - 224), set-max-prepost_memory: 5020, set-label-prepost_memory: Memory (5 - 5020GB) ]
+      - [ mem2, mem2,                                                                             set-max-prepost_cores:  56, set-label-prepost_cores: Number of CPU cores (1 - 56),  set-max-prepost_memory: 1500, set-label-prepost_memory: Memory (5 - 1500GB) ]
+
+  prepost_time:
+    widget: number
+    label:    [ Maximum hours (0 - 24), Maximum minutes (0 - 59) ]
+    size:     2
+    max:      [ 24, 59 ]
+    min:      [  0,  0 ]
+    value:    [  1,  0 ]
+    required: [ true, true ]
+
+  prepost_cores:
+    widget: number
+    label: Number of CPU cores
+    min: 1
+    value: 1
+    required: true
+
+  prepost_memory:
+    widget: number
+    label: Memory
+    min: 5
+    value: 5
+    required: true
+YAML
+end
+
+def fugaku_common(rsc_group, enable_threads = true, check_script_content = false, app_name = nil)
   form = form_rsc_group(rsc_group, enable_threads)
 
   if rsc_group == "single" && enable_threads
@@ -315,7 +377,7 @@ YAML
 YAML
   end
   
-  return form.chomp, header(check_script_content).chomp, script.chomp, check.chomp, submit.chomp
+  return form.chomp, header(check_script_content, app_name).chomp, script.chomp, check.chomp, submit.chomp
 end
 
 def output_options(options, value)
