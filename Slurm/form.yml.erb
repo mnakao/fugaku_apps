@@ -44,12 +44,27 @@ form:
     widget: radio
     label: Number of GPUs
     direction: horizontal
-    value: 0
+    value: "0"
     options:
       - ["0", ""]
       - ["1", "1"]
       - ["2", "2"]
-  
+
+  use_spack:
+    widget: checkbox
+    options:
+      - [ "Use spack", "\n# Load modules\n. /vol0004/apps/oss/spack/share/spack/setup-env.sh", enable-spack_modules ]
+      
+  spack_modules:
+    widget: multi_select
+    label: Select spack modules
+    indent: 1
+    separator: " "
+    options:
+<% File.foreach("./fugaku_apps/Slurm/spack_list.txt") do |line| %>
+      - [<%= line %>]
+<% end %>
+
 script: |
   #!/bin/bash
   #SBATCH -p #{partiton}
@@ -57,3 +72,7 @@ script: |
   #SBATCH -n #{cores}
   #SBATCH --mem #{memory}G
   #SBATCH --gpus-per-node=#{gpus}
+  set -e
+  #{use_spack}
+  spack load #{spack_modules}
+  
