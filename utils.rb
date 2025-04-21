@@ -1,4 +1,4 @@
-EXCLUDED_GROUPS = ["f-op", "fugaku", "oss-adm"] # "Group names starting with "isv" are deleted in the code.
+EXCLUDED_GROUPS = ["f-op", "fugaku", "trial", "oss-adm"] # "Group names starting with "isv" are deleted in the code.
 
 def favorites()
   user = ENV['USER']
