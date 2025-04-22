@@ -11,11 +11,11 @@ form:
     label: Partition
     required: true
     options:
-      - [ gpu1, gpu1, set-max-prepost_time_1: 3, set-label-prepost_time_1: Maximum hours (0 - 3), set-max-cores:  72, set-label-cores: Number of CPU cores (1 - 72),  set-max-memory:  186, set-label-memory: Memory (5 - 186GB), enable-gpus  ]
+      - [ gpu1, gpu1, set-max-time_1: 3, set-label-time_1: Maximum hours (0 - 3), set-max-cores:  72, set-label-cores: Number of CPU cores (1 - 72),  set-max-memory:  186, set-label-memory: Memory (5 - 186GB), enable-gpus  ]
       - [ gpu2, gpu2,                                                                             set-max-cores:  36, set-label-cores: Number of CPU cores (1 - 36),  set-max-memory:   93, set-label-memory: Memory (5 - 93GB),  enable-gpus  ]
-      - [ mem1, mem1, set-max-prepost_time_1: 3, set-label-prepost_time_1: Maximum hours (0 - 3), set-max-cores: 224, set-label-cores: Number of CPU cores (1 - 224), set-max-memory: 5020, set-label-memory: Memory (5 - 5020GB) ]
+      - [ mem1, mem1, set-max-time_1: 3, set-label-time_1: Maximum hours (0 - 3), set-max-cores: 224, set-label-cores: Number of CPU cores (1 - 224), set-max-memory: 5020, set-label-memory: Memory (5 - 5020GB) ]
       - [ mem2, mem2,                                                                             set-max-cores:  56, set-label-cores: Number of CPU cores (1 - 56),  set-max-memory: 1500, set-label-memory: Memory (5 - 1500GB) ]
-      - [ ondemand-reserved, ondemand-reserved, set-max-prepost_time_1: 720, set-label-prepost_time_1: Maximum hours (0 - 720), set-max-cores: 8, set-label-cores: Number of CPU cores (1 - 8), set-max-memory: 250, set-label-memory: Memory (5 - 250GB)]
+      - [ ondemand-reserved, ondemand-reserved, set-max-time_1: 720, set-label-time_1: Maximum hours (0 - 720), set-max-cores: 8, set-label-cores: Number of CPU cores (1 - 8), set-max-memory: 250, set-label-memory: Memory (5 - 250GB)]
 
   time:
     widget: number
@@ -65,6 +65,15 @@ form:
       - [<%= line %>]
 <% end %>
 
+check: |
+  oc_assert(@time_1.to_i != 0 || @time_2.to_i != 0, "Time is too short.")
+  message = "Exceeded Time (#{@time_1}:#{@time_2}:00)."
+  oc_assert((@partiton != "gpu1"              || @time_1.to_i !=   3) || @time_2.to_i <= 0, message)
+  oc_assert((@partiton != "gpu2"              || @time_1.to_i !=  24) || @time_2.to_i <= 0, message)
+  oc_assert((@partiton != "mem1"              || @time_1.to_i !=   3) || @time_2.to_i <= 0, message)
+  oc_assert((@partiton != "mem2"              || @time_1.to_i !=  24) || @time_2.to_i <= 0, message)
+  oc_assert((@partiton != "ondemand-reserved" || @time_1.to_i != 720) || @time_2.to_i <= 0, message)
+  
 script: |
   #!/bin/bash
   #SBATCH -p #{partiton}
