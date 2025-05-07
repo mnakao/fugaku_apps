@@ -467,7 +467,7 @@ def path(key, label, help = nil, required = true, indent = nil, show_files = tru
   form = <<-YAML
   #{key}:
     widget: path
-    value: #{default_dir()}"
+    value: #{default_dir()}
     show_files: #{show_files ? "true" : "false"}
     required: #{required ? "true" : "false"}
     #{favorites()}
